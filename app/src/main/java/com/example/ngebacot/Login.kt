@@ -6,10 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,11 +30,17 @@ class Login : ComponentActivity() {
         setContent {
             NgebacotTheme {
                 // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                )
+                {
                     BaseCard()
                 }
             }
         }
     }
+}
 
 
 
@@ -39,7 +48,8 @@ class Login : ComponentActivity() {
 fun BaseCard() {
     val abu = Color(0xFFa1a1a1)
     Column (
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
     ) {
         Card(
             colors = CardDefaults.cardColors(
@@ -48,6 +58,7 @@ fun BaseCard() {
             modifier = Modifier
                 .size(width = 240.dp, height = 260.dp)
                 .align(alignment = Alignment.CenterHorizontally)
+
 
         ) {
             Text(
