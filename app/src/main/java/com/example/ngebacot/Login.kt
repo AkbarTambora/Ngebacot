@@ -65,7 +65,7 @@ fun BaseCard() {
                 containerColor = abu,
             ),
             modifier = Modifier
-                .size(width = 240.dp, height = 260.dp)
+                .size(width = 340.dp, height = 460.dp)
                 .align(alignment = Alignment.CenterHorizontally)
         ) {
             Text(
