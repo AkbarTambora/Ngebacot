@@ -7,8 +7,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.ngebacot.ui.theme.NgebacotTheme
 
 
@@ -65,7 +70,7 @@ fun BaseCard() {
                 containerColor = abu,
             ),
             modifier = Modifier
-                .size(width = 340.dp, height = 460.dp)
+                .size(width = 340.dp, height = 320.dp)
                 .align(alignment = Alignment.CenterHorizontally)
         ) {
             Text(
@@ -83,22 +88,42 @@ fun BaseCard() {
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
-                label = { Text("Username") }
+                label = { Text("Username") },
+                modifier = Modifier
+                    .height(60.dp)
+                    .width(270.dp)
+                    .align(alignment = Alignment.CenterHorizontally)
+                ,
+                shape = RoundedCornerShape(50.dp)
             )
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
-                label = { Text("Password") }
+                label = { Text("Password") },
+                modifier = Modifier
+                    .height(60.dp)
+                    .width(270.dp)
+                    .align(alignment = Alignment.CenterHorizontally)
+//                    .padding(0.dp,10.dp,0.dp,0.dp)
+                ,
+                shape = RoundedCornerShape(50.dp)
             )
-            Button(onClick = { onClick() }) {
+            Button(onClick = { onClick() },
+                modifier = Modifier
+                    .height(48.dp)
+                    .width(270.dp)
+                    .align(alignment = Alignment.CenterHorizontally)
+//                    .padding(0.dp,10.dp,0.dp,0.dp)
+                  ,
+                shape = RoundedCornerShape(50.dp)) {
                 Text("Login")
             }
-            Text(
-                text = "Ngebacot",
-                modifier = Modifier
-                    .padding(6.dp)
-                    .align(alignment = Alignment.CenterHorizontally)
-            )
+//            Text(
+//                text = "Ngebacot",
+//                modifier = Modifier
+//                    .padding(6.dp)
+//                    .align(alignment = Alignment.CenterHorizontally)
+//            )
         }
     }
 
