@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -72,9 +73,9 @@ fun BaseCard() {
     val biruBaseCard = Color(0xFF7C92F5)
     val btnColorLogin = Color(0xFFFF6978)
     val outlineInputColor = Color(0xFFFFFFFF)
-    var text by remember { mutableStateOf("")
 
-    }
+    var text by remember { mutableStateOf("")}
+    var text2 by remember { mutableStateOf("")}
     Column (
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
@@ -108,11 +109,29 @@ fun BaseCard() {
                     .align(alignment = Alignment.CenterHorizontally)
                     .padding(bottom = 15.dp)
                 ,
+                singleLine = true,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
+                    unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
+                    focusedLabelColor = Color.White, // Warna label saat input fokus
+                    cursorColor = Color.Black, // Warna kursor
+                    textColor = outlineInputColor, // Warna teks
+//                    leadingIconColor = Color.Black, // Warna ikon di sebelah kiri input
+//                    trailingIconColor = Color.Black, // Warna ikon di sebelah kanan input
+                    errorCursorColor = Color.Red, // Warna kursor saat ada kesalahan
+                    errorLabelColor = Color.Red, // Warna label saat ada kesalahan
+                    errorBorderColor = Color.Red, // Warna outline saat ada kesalahan
+                    errorLeadingIconColor = Color.Red, // Warna ikon di sebelah kiri saat ada kesalahan
+                    errorTrailingIconColor = Color.Red, // Warna ikon di sebelah kanan saat ada kesalahan
+//                    borderWidth = 2.dp // Ketebalan outline
+                ),
                 shape = RoundedCornerShape(50.dp),
+
+
             )
             OutlinedTextField(
-                value = text,
-                onValueChange = { text = it },
+                value = text2,
+                onValueChange = { newText -> text2 = newText },
                 label = { Text("Password") },
                 modifier = Modifier
                     .height(75.dp)
@@ -120,8 +139,22 @@ fun BaseCard() {
                     .align(alignment = Alignment.CenterHorizontally)
                     .padding(bottom = 15.dp)
                 ,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
+                    unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
+                    focusedLabelColor = outlineInputColor, // Warna label saat input fokus
+                    cursorColor = Color.Black, // Warna kursor
+                    textColor = outlineInputColor, // Warna teks
+//                    leadingIconColor = Color.Black, // Warna ikon di sebelah kiri input
+//                    trailingIconColor = Color.Black, // Warna ikon di sebelah kanan input
+                    errorCursorColor = Color.Red, // Warna kursor saat ada kesalahan
+                    errorLabelColor = Color.Red, // Warna label saat ada kesalahan
+                    errorBorderColor = Color.Red, // Warna outline saat ada kesalahan
+                    errorLeadingIconColor = Color.Red, // Warna ikon di sebelah kiri saat ada kesalahan
+                    errorTrailingIconColor = Color.Red, // Warna ikon di sebelah kanan saat ada kesalahan
+//                    borderWidth = 2.dp // Ketebalan outline
+                ),
                 shape = RoundedCornerShape(50.dp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(outlineInputColor)
             )
             Button(onClick = { onClick() },
                 modifier = Modifier
