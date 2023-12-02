@@ -1,10 +1,12 @@
 package com.example.ngebacot
 
+import android.graphics.Paint.Style
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,10 +37,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -74,6 +78,22 @@ fun BaseCard() {
     val btnColorLogin = Color(0xFFFF6978)
     val outlineInputColor = Color(0xFFFFFFFF)
 
+//    custom font
+    val provider = GoogleFont.Provider(
+        providerAuthority = "com.google.android.gms.fonts",
+        providerPackage = "com.google.android.gms",
+        certificates = R.array.com_google_android_gms_fonts_certs
+    )
+
+//    val poppinsBold = GoogleFont("poppins_bold")
+
+    val poppins = FontFamily (
+        androidx.compose.ui.text.font.Font(R.font.poppins_reguler, FontWeight.Normal),
+        androidx.compose.ui.text.font.Font(R.font.poppins_medium, FontWeight.Medium),
+        androidx.compose.ui.text.font.Font(R.font.poppins_semibold, FontWeight.SemiBold),
+        androidx.compose.ui.text.font.Font(R.font.poppins_bold, FontWeight.Bold)
+    )
+
     var text by remember { mutableStateOf("")}
     var text2 by remember { mutableStateOf("")}
     Column (
@@ -85,18 +105,27 @@ fun BaseCard() {
                 containerColor = biruBaseCard,
             ),
             modifier = Modifier
-                .size(width = 340.dp, height = 320.dp)
+                .size(width = 340.dp, height = 380.dp)
                 .align(alignment = Alignment.CenterHorizontally)
         ) {
             Text(
+                fontSize = 18.sp,
+                fontFamily = poppins,
+                fontWeight = FontWeight.Normal,
+                color = Color.White,
                 text = "Welcome Back",
                 modifier = Modifier
-                    .padding(16.dp)
-                    .align(alignment = Alignment.CenterHorizontally)
+                    .padding(top = 15.dp)
+                    .align(alignment = Alignment.CenterHorizontally),
             )
             Text(
+                fontSize = 32.sp,
+                fontFamily = poppins,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.Red,
                 text = "Ngebacot",
                 modifier = Modifier
+                    .padding(bottom = 7.dp)
                     .align(alignment = Alignment.CenterHorizontally)
             )
             OutlinedTextField(
@@ -156,24 +185,44 @@ fun BaseCard() {
                 ),
                 shape = RoundedCornerShape(50.dp),
             )
-            Button(onClick = { onClick() },
-                modifier = Modifier
-                    .height(48.dp)
-                    .width(270.dp)
-                    .align(alignment = Alignment.CenterHorizontally)
-//                    .padding(0.dp,10.dp,0.dp,0.dp)
-                  ,
-                shape = RoundedCornerShape(50.dp),
-                colors = ButtonDefaults.buttonColors(btnColorLogin)
-            ) {
-                Text("Login")
+            Row(modifier = Modifier
+                .align(alignment = Alignment.CenterHorizontally)) {
+                Column() {
+                    Button(onClick = { onClick() },
+                        modifier = Modifier
+                            .height(60.dp)
+                            .width(270.dp)
+                            .padding(top = 15.dp)
+                        ,
+                        shape = RoundedCornerShape(50.dp),
+                        colors = ButtonDefaults.buttonColors(btnColorLogin)
+                    ) {
+                        Text("Login", fontSize = 20.sp, fontFamily = poppins, fontWeight = FontWeight.Medium)
+                    }
+                    Row {
+                        Text(
+                            fontSize = 16.sp,
+                            fontFamily = poppins,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.White,
+                            text = "Don’t have an account? ",
+                            modifier = Modifier
+                                .padding(top = 10.dp, bottom = 10.dp)
+                        )
+                        Text(
+                            fontSize = 16.sp,
+                            fontFamily = poppins,
+                            fontWeight = FontWeight.Normal,
+                            textDecoration = Underline,
+                            color = Color.White,
+                            text = "Sign Up!",
+                            modifier = Modifier
+                                .padding(top = 10.dp, bottom = 10.dp)
+                                .clickable {  }
+                        )
+                    }
+                }
             }
-            Text(
-                text = "Don’t have an account? Sign Up!",
-                modifier = Modifier
-//                    .padding(6.dp)
-//                    .align(alignment = Alignment.CenterHorizontally)
-            )
         }
     }
 
