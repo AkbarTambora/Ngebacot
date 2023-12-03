@@ -7,4 +7,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="abu">#0xFFA1A1A1</color>
+    <color name="biruBaseCard">#0xFF7C92F5</color>
+    <color name="btnColorLogin">#0xFF7C92F5</color>
+    <color name="outlineInputColor">#0xFFFFFFFF</color>
+
 </resources>
