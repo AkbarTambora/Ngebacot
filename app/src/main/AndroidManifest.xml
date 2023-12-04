@@ -23,6 +23,12 @@
             android:exported="true"
             android:label="@string/title_activity_register"
             android:theme="@style/Theme.Ngebacot" >
+        </activity>
+        <activity
+            android:name=".HomePage"
+            android:exported="true"
+            android:label="@string/title_activity_homepage"
+            android:theme="@style/Theme.Ngebacot" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

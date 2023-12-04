@@ -215,7 +215,7 @@ fun BaseCard() {
                             fontWeight = FontWeight.Normal,
                             textDecoration = Underline,
                             color = Color.White,
-                            text = "Sign Up!",
+                            text = "Register",
                             modifier = Modifier
                                 .padding(top = 10.dp, bottom = 10.dp)
                                 .clickable {  }

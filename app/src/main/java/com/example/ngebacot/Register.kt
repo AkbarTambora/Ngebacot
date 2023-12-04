@@ -107,7 +107,7 @@ fun BaseCardRegister() {
                 containerColor = biruBaseCard,
             ),
             modifier = Modifier
-                .size(width = 340.dp, height = 500.dp)
+                .size(width = 340.dp, height = 520.dp)
                 .align(alignment = Alignment.CenterHorizontally)
         ) {
             Text(
@@ -115,7 +115,7 @@ fun BaseCardRegister() {
                 fontFamily = poppins,
                 fontWeight = FontWeight.Normal,
                 color = Color.White,
-                text = "Welcome Back",
+                text = "Let's Join Us!",
                 modifier = Modifier
                     .padding(top = 15.dp)
                     .align(alignment = Alignment.CenterHorizontally),
@@ -215,7 +215,7 @@ fun BaseCardRegister() {
             OutlinedTextField(
                 value = confirmPassword,
                 onValueChange = { newText -> confirmPassword = newText },
-                label = { Text("Password") },
+                label = { Text("Confirm Password") },
                 modifier = Modifier
                     .height(75.dp)
                     .width(270.dp)
@@ -256,7 +256,7 @@ fun BaseCardRegister() {
                             fontFamily = poppins,
                             fontWeight = FontWeight.Normal,
                             color = Color.White,
-                            text = "Don’t have an account? ",
+                            text = "Already have an account? ",
                             modifier = Modifier
                                 .padding(top = 10.dp, bottom = 10.dp)
                         )
@@ -266,7 +266,7 @@ fun BaseCardRegister() {
                             fontWeight = FontWeight.Normal,
                             textDecoration = Underline,
                             color = Color.White,
-                            text = "Sign Up!",
+                            text = "Log In!",
                             modifier = Modifier
                                 .padding(top = 10.dp, bottom = 10.dp)
                                 .clickable {  }
