@@ -6,10 +6,10 @@
     "license": {
         "name": "Apache 2.0",
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
-    }
+        }
     },
     "servers": [
-    {"url":"https://api.server.test/v1"}
+        {"url":"https://api.server.test/v1"}
     ],
     "paths": {
         "/api/users" : {
@@ -25,7 +25,6 @@
                                     "value" :{
                                         "email" : "raihanardila22@gmail.com",
                                         "username" : "raihanardila22",
-                                        "name" : "Raiardiann",
                                         "password" : "gantengbanget"
                                     }
                                 }
@@ -35,17 +34,13 @@
                                 "required" : [
                                     "email",
                                     "password",
-                                    "username",
-                                    "name"
+                                    "username"
                                 ],
                                 "properties" : {
                                     "email" : {
                                         "type" : "string"
                                     },
                                     "username" : {
-                                        "type" : "string"
-                                    },
-                                    "name" : {
                                         "type" : "string"
                                     },
                                     "password" : {
@@ -75,9 +70,6 @@
                                                     "email has been taken",
                                                     "please use format email @"
                                                 ],
-                                                "name" : [
-                                                    "name must not be blank"
-                                                ],
                                                 "password" : [
                                                     "password must not be blank",
                                                     "password must uniqe characters, symbol and lowercase",
@@ -101,8 +93,7 @@
                                             "data" : {
                                                 "id" : 1,
                                                 "email" : "raihanardila22@gmail.com",
-                                                "username" : "raiardiann",
-                                                "name" : "Kurnia Raihan Ardian"
+                                                "username" : "raiardiann"
                                             }
                                         }
                                     }
@@ -120,9 +111,6 @@
                                                     "type" : "string"
                                                 },
                                                 "username" : {
-                                                    "type" : "string"
-                                                },
-                                                "name" : {
                                                     "type" : "string"
                                                 }
                                             }
@@ -208,42 +196,39 @@
                 }
             }
         },
-        "/api/users/current" : {
-            "get" : {
-                "description" : "Get current users",
-                "parameters" : [
+       "/api/users/current": {
+            "get": {
+                "description": "Get current user",
+                "parameters": [
                     {
-                        "name" : "Authorization",
-                        "in" : "header"
+                        "name": "Authorization",
+                        "in": "header"
                     }
                 ],
-                "responses" : {
-                    "200" : {
-                        "description" : "succes get current users",
-                        "content" : {
-                            "application/json" : {
-                                "schema" : {
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "object",
-                                            "properties" : {
-                                                "id" : {
-                                                    "type" : "number"
+                "responses": {
+                    "200": {
+                        "description": "Success get current user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "number"
                                                 },
-                                                "email" : {
-                                                    "type" : "string"
+                                                "username": {
+                                                    "type": "string"
                                                 },
-                                                "username" : {
-                                                    "type" : "string"
-                                                },
-                                                "name" : {
-                                                    "type" : "string"
+                                                "name": {
+                                                    "type": "string"
                                                 }
                                             }
                                         },
-                                        "errors" : {
-                                                "type" : "object"
+                                        "errors": {
+                                            "type": "object"
                                         }
                                     }
                                 }
@@ -252,65 +237,56 @@
                     }
                 }
             },
-            "patch" : {
-                "description" : "Update current user",
-                "parameters" : [
+            "patch": {
+                "description": "Update current user",
+                "parameters": [
                     {
-                        "name" : "Authorization",
-                        "in" : "header"
+                        "name": "Authorization",
+                        "in": "header"
                     }
                 ],
-                "requestBody" : {
-                    "description" : "Update current users",
-                    "content" : {
-                        "application/json" : {
-                            "schema" : {
-                                "type" : "object",
-                                "properties" : {
-                                    "name" : {
-                                        "type" : "string"
+                "requestBody": {
+                    "description": "Update current user",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
                                     },
-                                    "email" : {
-                                        "type" : "string"
-                                    },
-                                    "username" : {
-                                        "type" : "string"
-                                    },
-                                    "password" : {
-                                        "type" : "string"
+                                    "password": {
+                                        "type": "string"
                                     }
                                 }
                             }
                         }
                     }
                 },
-                "responses" : {
-                    "200" : {
-                        "description" : "succes get current users",
-                        "content" : {
-                            "application/json" : {
-                                "schema" : {
-                                    "type" : "object",
-                                    "properties" : {
-                                        "data" : {
-                                            "type" : "object",
-                                            "properties" : {
-                                                "id" : {
-                                                    "type" : "number"
+                "responses": {
+                    "200": {
+                        "description": "Success update user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "number"
                                                 },
-                                                "email" : {
-                                                    "type" : "string"
+                                                "username": {
+                                                    "type": "string"
                                                 },
-                                                "username" : {
-                                                    "type" : "string"
-                                                },
-                                                "name" : {
-                                                    "type" : "string"
+                                                "name": {
+                                                    "type": "string"
                                                 }
                                             }
                                         },
-                                        "errors" : {
-                                                "type" : "object"
+                                        "errors": {
+                                            "type": "object"
                                         }
                                     }
                                 }

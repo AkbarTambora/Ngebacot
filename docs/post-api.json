@@ -1,0 +1,36 @@
+{
+    "openapi":"3.0.2",
+    "info": {
+        "title":"POSTING API",
+        "version":"1.0",
+        "license": {
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+    "servers": [
+        {"url":"https://api.server.test/v1"}
+    ],
+    "paths": {
+        "/api/post" : {
+            "post" : {
+                "description": "Create Posting"
+            },
+            "get" : {
+                "description": "Search Posting"
+            }
+        },
+
+        "/api/post/{id}" : {
+            "put" : {
+                "description": "updated Post"
+            },
+            "get" : {
+                "description": "Get Posting"
+            },
+            "delete" : {
+                "description": "delete Posting"
+            }
+        }
+    }
+}
