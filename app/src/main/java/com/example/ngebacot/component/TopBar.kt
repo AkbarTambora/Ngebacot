@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -32,6 +33,7 @@ fun TopBar() {
             colors = CardDefaults.cardColors(
                 containerColor = biruBaseCard,
             ),
+            shape = RoundedCornerShape(0.dp),
             modifier = Modifier
                 .height(50.dp)
                 .fillMaxWidth()
@@ -42,7 +44,7 @@ fun TopBar() {
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.White,
-                text = "Welcome Back",
+                text = "Ngebacot",
                 modifier = Modifier
                     .padding(top = 15.dp)
                     .align(alignment = Alignment.CenterHorizontally),
