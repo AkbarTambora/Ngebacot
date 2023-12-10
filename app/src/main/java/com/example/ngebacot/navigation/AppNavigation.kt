@@ -1,5 +1,8 @@
 package com.example.ngebacot.navigation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -10,6 +13,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -28,7 +33,14 @@ fun AppNavigation(){
 
     Scaffold (
         bottomBar={
-            NavigationBar {
+            val backgroundColor: Color = Color(0xFF7C92F5)
+            NavigationBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(75.dp),
+                backgroundColor
+
+            ) {
                 val navBackStackEntry : NavBackStackEntry? by navController.currentBackStackEntryAsState()
                 val currentDestination : NavDestination? = navBackStackEntry?.destination
 
@@ -44,11 +56,20 @@ fun AppNavigation(){
                                       restoreState = true
                                   }
                         },
+                        modifier = Modifier.background(Color.Transparent),
                         icon = {
-                               Icon(
-                                   imageVector = navItem.icon,
-                                   contentDescription = null
-                               )
+                            // Memilih ikon berdasarkan kondisi seleksi
+                            val icon = if (currentDestination?.hierarchy?.any { it.route == navItem.route } == true) {
+                                navItem.filledIcon
+                            } else {
+                                navItem.icon
+                            }
+                            // Menampilkan ikon sesuai kondisi
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = null,
+                            )
+
                         },
                         label = {
                             Text(text = navItem.label)
