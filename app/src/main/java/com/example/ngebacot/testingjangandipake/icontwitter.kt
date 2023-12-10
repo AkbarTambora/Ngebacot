@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -16,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,36 +62,42 @@ fun iconTwitter() {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
             .background(Color.Transparent)
-
     ) {
-        // TextField untuk menulis teks
-        TextField(
-            value = text,
-            onValueChange = {
-                text = it
-            },
-            label = { Text("Write something...") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Center)
-                .padding(16.dp),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    // Aksi yang dijalankan ketika keyboard "Done" ditekan
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                }
+        // TextField untuk menulis teks (ditampilkan atau disembunyikan berdasarkan isEditing)
+        if (isEditing) {
+            TextField(
+                value = text,
+                onValueChange = {
+                    text = it
+                },
+                label = { Text("Tulis bacotan anda...") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center)
+                    .padding(16.dp)
+                    .height(500.dp)
+                    .background(Color.Yellow), //(gabisa) Ubah warna dasar dari TextField,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        // Aksi yang dijalankan ketika keyboard "Done" ditekan
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                    }
+                ),
+                colors = TextFieldDefaults.textFieldColors(
+                    focusedIndicatorColor = Color.Green, // Ubah warna teks saat fokus
+                    cursorColor = Color.Green // Ubah warna kursor
+                )
             )
-        )
+        }
 
         // Tombol untuk membuka atau menutup mode edit
         IconButton(
@@ -106,14 +115,17 @@ fun iconTwitter() {
                 }
             },
             modifier = Modifier
-//                .background(MaterialTheme.colorScheme.primary)
                 .align(Alignment.BottomCenter)
-                .offset(y = -120.dp)
+                .offset(y = -70.dp, x = 140.dp)
                 .background(Color.Transparent)
         ) {
             Icon(
-                imageVector = if (isEditing) Icons.Default.Send else Icons.Default.Edit,
-                contentDescription = "Edit"
+                imageVector =
+                if (isEditing) Icons.Default.Send
+                else Icons.Default.Edit,
+                contentDescription = "Edit",
+                modifier = Modifier
+                    .size(32.dp)
             )
         }
     }
