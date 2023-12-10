@@ -3,49 +3,36 @@ package com.example.ngebacot
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.example.ngebacot.ui.theme.NgebacotTheme
-import org.w3c.dom.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import com.example.ngebacot.navigation.AppNavigation
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            FilledCard()
+            AppNavigation()
         }
     }
 }
 
-@Preview
-@Composable
-fun FilledCard(){
-    val warna = Color(0xFF000000)
-
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = warna,
-        ),
-        modifier = Modifier
-            .size(width = 240.dp, height = 100.dp)
-    ) {
-        Text(
-            text = "Filled",
-            modifier = Modifier
-                .padding(16.dp),
-            textAlign = TextAlign.Center,
-        )
-    }
-}
+//@Preview
+//@Composable
+//fun FilledCard(){
+//    val warna = Color(0xFF000000)
+//
+//    Card(
+//        colors = CardDefaults.cardColors(
+//            containerColor = warna,
+//        ),
+//        modifier = Modifier
+//            .size(width = 240.dp, height = 100.dp)
+//    ) {
+//        Text(
+//            text = "Filled",
+//            modifier = Modifier
+//                .padding(16.dp),
+//            textAlign = TextAlign.Center,
+//        )
+//    }
+//}

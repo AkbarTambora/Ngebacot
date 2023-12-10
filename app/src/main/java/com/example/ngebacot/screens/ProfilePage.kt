@@ -10,11 +10,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun HomePage(){
+fun ProfilePage(){
     Box(modifier = Modifier
         .fillMaxSize(),
         contentAlignment = Alignment.Center) {
-        Text(text = "HomePage",
+        Text(text = "Profile Page",
             fontFamily = FontFamily.Serif,
             fontSize = 22.sp)
     }
