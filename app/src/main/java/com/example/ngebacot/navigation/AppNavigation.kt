@@ -25,36 +25,52 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.screens.HomePage
 import com.example.ngebacot.screens.ProfilePage
+import com.example.ngebacot.testingjangandipake.iconTwitter
 
 @ExperimentalMaterial3Api
 @Composable
-fun AppNavigation(){
+fun AppNavigation() {
     val navController = rememberNavController()
 
-    Scaffold (
-        bottomBar={
+    Scaffold(
+        content = { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = Screens.HomePage.name,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                composable(route = Screens.HomePage.name) {
+                    // Memasukkan iconTwitter() di dalam HomePage
+                    HomePage(navController)
+                    iconTwitter()
+                }
+                composable(route = Screens.ProfilePage.name) {
+                    ProfilePage()
+                }
+            }
+        },
+        bottomBar = {
             val backgroundColor: Color = Color(0xFF7C92F5)
             NavigationBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(65.dp),
                 backgroundColor
-
             ) {
-                val navBackStackEntry : NavBackStackEntry? by navController.currentBackStackEntryAsState()
-                val currentDestination : NavDestination? = navBackStackEntry?.destination
+                val navBackStackEntry: NavBackStackEntry? by navController.currentBackStackEntryAsState()
+                val currentDestination: NavDestination? = navBackStackEntry?.destination
 
-                listOfNavItems.forEach{navItem : NavItem->
+                listOfNavItems.forEach { navItem: NavItem ->
                     NavigationBarItem(
-                        selected = currentDestination?.hierarchy?.any{it.route == navItem.route}==true,
+                        selected = currentDestination?.hierarchy?.any { it.route == navItem.route } == true,
                         onClick = {
-                                  navController.navigate(navItem.route){
-                                      popUpTo(navController.graph.findStartDestination().id){
-                                          saveState = true
-                                      }
-                                      launchSingleTop = true
-                                      restoreState = true
-                                  }
+                            navController.navigate(navItem.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         },
                         modifier = Modifier.background(Color.Transparent),
                         icon = {
@@ -71,30 +87,10 @@ fun AppNavigation(){
                                 modifier = Modifier
                                     .size(32.dp)
                             )
-
                         },
-//                        label = {
-//                            Text(text = navItem.label)
-//                        }
                     )
                 }
             }
         }
-    ){
-        paddingValues ->
-        NavHost(
-            navController = navController,
-            startDestination = Screens.HomePage.name,
-            modifier = Modifier
-                .padding(paddingValues)
-        ){
-            composable(route = Screens.HomePage.name){
-                HomePage()
-            }
-            composable(route = Screens.ProfilePage.name){
-                ProfilePage()
-            }
-        }
-    }
-
+    )
 }

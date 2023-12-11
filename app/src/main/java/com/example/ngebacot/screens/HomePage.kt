@@ -8,9 +8,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.ngebacot.testingjangandipake.iconTwitter
 
 @Composable
-fun HomePage(){
+fun HomePage(navController: NavHostController) {
     Box(modifier = Modifier
         .fillMaxSize(),
         contentAlignment = Alignment.Center) {
@@ -18,4 +20,5 @@ fun HomePage(){
             fontFamily = FontFamily.Serif,
             fontSize = 22.sp)
     }
+    iconTwitter()
 }

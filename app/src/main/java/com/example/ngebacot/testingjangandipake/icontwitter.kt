@@ -116,7 +116,7 @@ fun iconTwitter() {
             },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .offset(y = -70.dp, x = 140.dp)
+                .offset(y = 0.dp, x = 140.dp)
                 .background(Color.Transparent)
         ) {
             Icon(
