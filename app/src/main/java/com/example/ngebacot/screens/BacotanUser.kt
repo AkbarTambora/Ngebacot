@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -66,15 +68,24 @@ fun BacotanUser(msg: Message) {
                 modifier = Modifier
                     .padding(10.dp)
             ) {
-                Image(
-                    painter = painterResource(R.drawable.androidparty),
-                    contentDescription = "Foto Profil",
+                Box(
                     modifier = Modifier
-                        // Set image size to 40 dp
-                        .size(58.dp)
-                        // Clip image to be shaped as a circle
+                        .size(32.dp)
                         .clip(CircleShape)
-                )
+                        .background(MaterialTheme.colorScheme.primary)
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.androidparty),
+                        contentDescription = "Foto Profil",
+                        modifier = Modifier
+                            // Set image size to 40 dp
+                            .size(32.dp)
+                            // Clip image to be shaped as a circle
+//                            Pastikan rasio aspek 1:1
+                            .clip(CircleShape)
+                    )
+                }
+
                 // Add a horizontal space between the image and the column
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
