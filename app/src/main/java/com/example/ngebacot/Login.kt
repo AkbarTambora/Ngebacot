@@ -17,11 +17,16 @@ import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -36,11 +41,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,7 +70,7 @@ class Login : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 )
                 {
-                    BaseCard()
+                    BaseCard(  )
                 }
             }
         }
@@ -72,7 +81,9 @@ class Login : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BaseCard() {
+fun BaseCard(
+    hasError: Boolean = false,
+) {
     val abu = Color(0xFFa1a1a1)
     val biruBaseCard = Color(0xFF7C92F5)
     val btnColorLogin = Color(0xFFFF6978)
@@ -96,6 +107,11 @@ fun BaseCard() {
 
     var text by remember { mutableStateOf("")}
     var text2 by remember { mutableStateOf("")}
+
+//    kode untuk hide or not pw
+    val focusManager = LocalFocusManager.current
+    val showPassword = remember { mutableStateOf(false) }
+
     Column (
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
@@ -142,17 +158,8 @@ fun BaseCard() {
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
                     unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
-                    focusedLabelColor = Color.White, // Warna label saat input fokus
-                    cursorColor = Color.Black, // Warna kursor
+                    focusedLabelColor = outlineInputColor, // Warna label saat input fokus
                     textColor = outlineInputColor, // Warna teks
-//                    leadingIconColor = Color.Black, // Warna ikon di sebelah kiri input
-//                    trailingIconColor = Color.Black, // Warna ikon di sebelah kanan input
-                    errorCursorColor = Color.Red, // Warna kursor saat ada kesalahan
-                    errorLabelColor = Color.Red, // Warna label saat ada kesalahan
-                    errorBorderColor = Color.Red, // Warna outline saat ada kesalahan
-                    errorLeadingIconColor = Color.Red, // Warna ikon di sebelah kiri saat ada kesalahan
-                    errorTrailingIconColor = Color.Red, // Warna ikon di sebelah kanan saat ada kesalahan
-//                    borderWidth = 2.dp // Ketebalan outline
                 ),
                 shape = RoundedCornerShape(50.dp),
 
@@ -172,18 +179,31 @@ fun BaseCard() {
                     focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
                     unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
                     focusedLabelColor = outlineInputColor, // Warna label saat input fokus
-                    cursorColor = Color.Black, // Warna kursor
                     textColor = outlineInputColor, // Warna teks
-//                    leadingIconColor = Color.Black, // Warna ikon di sebelah kiri input
-//                    trailingIconColor = Color.Black, // Warna ikon di sebelah kanan input
-                    errorCursorColor = Color.Red, // Warna kursor saat ada kesalahan
-                    errorLabelColor = Color.Red, // Warna label saat ada kesalahan
-                    errorBorderColor = Color.Red, // Warna outline saat ada kesalahan
-                    errorLeadingIconColor = Color.Red, // Warna ikon di sebelah kiri saat ada kesalahan
-                    errorTrailingIconColor = Color.Red, // Warna ikon di sebelah kanan saat ada kesalahan
-//                    borderWidth = 2.dp // Ketebalan outline
                 ),
                 shape = RoundedCornerShape(50.dp),
+//                kode tambahan untuk hide or nor pw
+                singleLine = true,
+                isError = hasError,
+                visualTransformation = if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val (icon, iconColor) = if (showPassword.value) {
+                        Pair(
+                            Icons.Filled.Visibility,
+                            colorResource(id = R.color.white)
+                        )
+                    } else {
+                        Pair(Icons.Filled.VisibilityOff, colorResource(id = R.color.white))
+                    }
+
+                    IconButton(onClick = { showPassword.value = !showPassword.value }) {
+                        Icon(
+                            icon,
+                            contentDescription = "Visibility",
+                            tint = iconColor
+                        )
+                    }
+                },
             )
             Row(modifier = Modifier
                 .align(alignment = Alignment.CenterHorizontally)) {
