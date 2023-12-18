@@ -75,6 +75,9 @@ fun iconTwitter() {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
+//    untuk limit karakter yg diketik user (sama kaya twitter max 280 karakter)
+    val maxLength = 280
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -88,15 +91,16 @@ fun iconTwitter() {
                     .fillMaxHeight()
                     .background(Color(239, 230, 221)),
             )
+//            input text
             TextField(
                 value = text,
                 onValueChange = {
-                    text = it
+                    if (it.length <= maxLength)
+                        text = it
                 },
                 textStyle = TextStyle(
                     fontSize = 18.sp
-                )
-                ,
+                ),
                 label = { Text("Tulis bacotan anda...") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -145,7 +149,7 @@ fun iconTwitter() {
                 modifier = Modifier
                     .background(Color.Transparent)
                     .align(Alignment.TopStart)
-                    .padding(start = 22.dp, top = 22.dp)
+                    .padding(start = 22.dp, top = 21.dp)
             ) {
             Icon(
                 imageVector = Icons.Default.Close,
