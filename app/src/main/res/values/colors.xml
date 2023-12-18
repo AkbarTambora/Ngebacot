@@ -11,4 +11,5 @@
     <color name="biruBaseCard">#FF7C92F5</color>
     <color name="btnColorLogin">#FF7C92F5</color>
     <color name="red">#FF0000</color>
+    <color name="logoColor">#FFA30015</color>
 </resources>

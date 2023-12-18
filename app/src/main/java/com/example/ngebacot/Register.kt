@@ -78,18 +78,12 @@ class Register : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BaseCardRegister(
-    hasError: Boolean = false,
-    hasError2: Boolean = false,
-
-) {
+fun BaseCardRegister() {
 
 //    confirm password
     val focusManager = LocalFocusManager.current
     val showPassword = remember { mutableStateOf(false) }
     val showPassword2 = remember { mutableStateOf(false) }
-    val matchError = remember { mutableStateOf(false) }
-    val matchError2 = remember { mutableStateOf(false) }
 
 //    warna
     val abu = Color(0xFFa1a1a1)
@@ -111,6 +105,10 @@ fun BaseCardRegister(
         androidx.compose.ui.text.font.Font(R.font.poppins_medium, FontWeight.Medium),
         androidx.compose.ui.text.font.Font(R.font.poppins_semibold, FontWeight.SemiBold),
         androidx.compose.ui.text.font.Font(R.font.poppins_bold, FontWeight.Bold)
+    )
+
+    val logoBacot = FontFamily(
+        androidx.compose.ui.text.font.Font(R.font.adlamdisplay_reguler, FontWeight.Normal)
     )
 
     var email by remember { mutableStateOf("")}
@@ -145,12 +143,11 @@ fun BaseCardRegister(
             )
             Text(
                 fontSize = 32.sp,
-                fontFamily = poppins,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.Red,
+                fontFamily = logoBacot,
+                color = Color(245, 245, 245),
                 text = "Ngebacot",
                 modifier = Modifier
-                    .padding(bottom = 7.dp)
+                    .padding(bottom = 10.dp)
                     .align(alignment = Alignment.CenterHorizontally)
             )
 //            Email
@@ -289,7 +286,9 @@ fun BaseCardRegister(
             }
             Row(modifier = Modifier
                 .align(alignment = Alignment.CenterHorizontally)) {
-                Column() {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Button(onClick = { onClickRegister() },
                         modifier = Modifier
                             .height(60.dp)

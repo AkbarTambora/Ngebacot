@@ -104,6 +104,9 @@ fun BaseCard(
         androidx.compose.ui.text.font.Font(R.font.poppins_semibold, FontWeight.SemiBold),
         androidx.compose.ui.text.font.Font(R.font.poppins_bold, FontWeight.Bold)
     )
+    val logoBacot = FontFamily(
+        androidx.compose.ui.text.font.Font(R.font.adlamdisplay_reguler, FontWeight.Normal)
+    )
 
     var text by remember { mutableStateOf("")}
     var text2 by remember { mutableStateOf("")}
@@ -136,9 +139,8 @@ fun BaseCard(
             )
             Text(
                 fontSize = 32.sp,
-                fontFamily = poppins,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.Red,
+                fontFamily = logoBacot,
+                color = Color(245, 245, 245),
                 text = "Ngebacot",
                 modifier = Modifier
                     .padding(bottom = 7.dp)
