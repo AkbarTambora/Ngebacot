@@ -22,12 +22,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity
             android:name=".Register"
             android:exported="true"
             android:label="@string/title_activity_register"
             android:theme="@style/Theme.Ngebacot" >
+
         </activity>
         <activity
             android:name=".screens.HomePage"
