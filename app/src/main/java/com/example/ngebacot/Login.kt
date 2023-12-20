@@ -47,47 +47,17 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.ngebacot.ui.theme.NgebacotTheme
 
-
-//class Login : ComponentActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContent {
-//            NgebacotTheme {
-//                // A surface container using the 'background' color from the theme
-//                Surface(
-//                    modifier = Modifier.fillMaxSize(),
-//                    color = MaterialTheme.colorScheme.background
-//                )
-//                {
-//                    BaseCard(  )
-//                }
-//            }
-//        }
-//    }
-//}
-
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Login(
     hasError: Boolean = false,
     navController: NavHostController
 ) {
-    val abu = Color(0xFFa1a1a1)
     val biruBaseCard = Color(0xFF7C92F5)
     val btnColorLogin = Color(0xFFFF6978)
     val outlineInputColor = Color(0xFFFFFFFF)
 
 //    custom font
-    val provider = GoogleFont.Provider(
-        providerAuthority = "com.google.android.gms.fonts",
-        providerPackage = "com.google.android.gms",
-        certificates = R.array.com_google_android_gms_fonts_certs
-    )
-
-//    val poppinsBold = GoogleFont("poppins_bold")
-
     val poppins = FontFamily (
         androidx.compose.ui.text.font.Font(R.font.poppins_reguler, FontWeight.Normal),
         androidx.compose.ui.text.font.Font(R.font.poppins_medium, FontWeight.Medium),
@@ -116,7 +86,6 @@ fun Login(
             ),
             modifier = Modifier
                 .size(width = 340.dp, height = 380.dp)
-//                .align(alignment = Alignment.CenterHorizontally)
                 .align(Alignment.Center)
         ) {
             Text(
@@ -246,16 +215,4 @@ fun Login(
 
 fun onClick() {
 
-}
-
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    name = "Dashboard"
-)
-@Composable
-fun GreetingPreview() {
-    NgebacotTheme {
-//        BaseCard()
-    }
 }
