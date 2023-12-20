@@ -1,19 +1,14 @@
 package com.example.ngebacot
 
-import android.graphics.Paint.Style
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+//import androidx.compose.foundation.layout.FlowRowScopeInstance.align
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,11 +22,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,45 +36,43 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.ngebacot.ui.theme.NgebacotTheme
 
 
-class Login : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            NgebacotTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                )
-                {
-                    BaseCard(  )
-                }
-            }
-        }
-    }
-}
+//class Login : ComponentActivity() {
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setContent {
+//            NgebacotTheme {
+//                // A surface container using the 'background' color from the theme
+//                Surface(
+//                    modifier = Modifier.fillMaxSize(),
+//                    color = MaterialTheme.colorScheme.background
+//                )
+//                {
+//                    BaseCard(  )
+//                }
+//            }
+//        }
+//    }
+//}
 
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BaseCard(
+fun Login(
     hasError: Boolean = false,
+    navController: NavHostController
 ) {
     val abu = Color(0xFFa1a1a1)
     val biruBaseCard = Color(0xFF7C92F5)
@@ -115,9 +105,10 @@ fun BaseCard(
     val focusManager = LocalFocusManager.current
     val showPassword = remember { mutableStateOf(false) }
 
-    Column (
-        verticalArrangement = Arrangement.Center,
+    Box(
         modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
         Card(
             colors = CardDefaults.cardColors(
@@ -125,7 +116,8 @@ fun BaseCard(
             ),
             modifier = Modifier
                 .size(width = 340.dp, height = 380.dp)
-                .align(alignment = Alignment.CenterHorizontally)
+//                .align(alignment = Alignment.CenterHorizontally)
+                .align(Alignment.Center)
         ) {
             Text(
                 fontSize = 18.sp,
@@ -166,7 +158,7 @@ fun BaseCard(
                 shape = RoundedCornerShape(50.dp),
 
 
-            )
+                )
             OutlinedTextField(
                 value = text2,
                 onValueChange = { newText -> text2 = newText },
@@ -240,7 +232,9 @@ fun BaseCard(
                             text = "Register",
                             modifier = Modifier
                                 .padding(top = 10.dp, bottom = 10.dp)
-                                .clickable {  }
+                                .clickable {
+                                    navController.navigate("Register")
+                                }
                         )
                     }
                 }
@@ -262,6 +256,6 @@ fun onClick() {
 @Composable
 fun GreetingPreview() {
     NgebacotTheme {
-        BaseCard()
+//        BaseCard()
     }
 }

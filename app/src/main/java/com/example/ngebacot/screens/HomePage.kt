@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import com.example.ngebacot.testingjangandipake.iconTwitter
 
 @Composable
-fun HomePage(navController: NavHostController) {
+fun HomePage() {
 //    Box(modifier = Modifier
 //        .fillMaxSize(),
 //        contentAlignment = Alignment.Center) {

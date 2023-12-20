@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -23,6 +24,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.ngebacot.Register
 import com.example.ngebacot.screens.HomePage
 import com.example.ngebacot.screens.ProfilePage
 import com.example.ngebacot.testingjangandipake.iconTwitter
@@ -41,7 +43,7 @@ fun AppNavigation() {
             ) {
                 composable(route = Screens.HomePage.name) {
                     // Memasukkan iconTwitter() di dalam HomePage
-                    HomePage(navController)
+                    HomePage()
                     iconTwitter()
                 }
                 composable(route = Screens.ProfilePage.name) {
@@ -75,11 +77,12 @@ fun AppNavigation() {
                         modifier = Modifier.background(Color.Transparent),
                         icon = {
                             // Memilih ikon berdasarkan kondisi seleksi
-                            val icon = if (currentDestination?.hierarchy?.any { it.route == navItem.route } == true) {
-                                navItem.filledIcon
-                            } else {
-                                navItem.icon
-                            }
+                            val icon =
+                                if (currentDestination?.hierarchy?.any { it.route == navItem.route } == true) {
+                                    navItem.filledIcon
+                                } else {
+                                    navItem.icon
+                                }
                             // Menampilkan ikon sesuai kondisi
                             Icon(
                                 imageVector = icon,

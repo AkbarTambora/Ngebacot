@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -53,32 +54,36 @@ import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.ngebacot.ui.theme.NgebacotTheme
 
 
-class Register : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            NgebacotTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                )
-                {
-                    BaseCardRegister()
-                }
-            }
-        }
-    }
-}
+//class Register : ComponentActivity() {
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setContent {
+//            NgebacotTheme {
+//                // A surface container using the 'background' color from the theme
+//                Surface(
+//                    modifier = Modifier.fillMaxSize(),
+//                    color = MaterialTheme.colorScheme.background
+//                )
+//                {
+//                    BaseCardRegister()
+//                }
+//            }
+//        }
+//    }
+//}
 
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BaseCardRegister() {
+fun Register(
+    navController: NavHostController
+) {
 
 //    confirm password
     val focusManager = LocalFocusManager.current
@@ -119,9 +124,10 @@ fun BaseCardRegister() {
 //    validasi password
     val passwordMismatch = password.isNotEmpty() && password != confirmPassword
     val errorText = if (passwordMismatch) "Password don't macth" else ""
-    Column (
-        verticalArrangement = Arrangement.Center,
+    Box (
         modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
         Card(
             colors = CardDefaults.cardColors(
@@ -129,7 +135,7 @@ fun BaseCardRegister() {
             ),
             modifier = Modifier
                 .size(width = 340.dp, height = 535.dp)
-                .align(alignment = Alignment.CenterHorizontally)
+                .align(Alignment.Center)
         ) {
             Text(
                 fontSize = 18.sp,
@@ -320,7 +326,9 @@ fun BaseCardRegister() {
                             text = "Log In!",
                             modifier = Modifier
                                 .padding(top = 10.dp, bottom = 10.dp)
-                                .clickable {  }
+                                .clickable {
+                                    navController.navigate("Login")
+                                }
                         )
                     }
                 }
@@ -334,14 +342,14 @@ fun onClickRegister() {
 
 }
 
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    name = "Dashboard"
-)
-@Composable
-fun RegisterPage() {
-    NgebacotTheme {
-        BaseCardRegister()
-    }
-}
+//@Preview(
+//    showBackground = true,
+//    showSystemUi = true,
+//    name = "Dashboard"
+//)
+//@Composable
+//fun RegisterPage() {
+//    NgebacotTheme {
+////        BaseCardRegister()
+//    }
+//}
