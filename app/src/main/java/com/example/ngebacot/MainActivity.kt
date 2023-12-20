@@ -15,24 +15,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun FilledCard(){
-//    val warna = Color(0xFF000000)
-//
-//    Card(
-//        colors = CardDefaults.cardColors(
-//            containerColor = warna,
-//        ),
-//        modifier = Modifier
-//            .size(width = 240.dp, height = 100.dp)
-//    ) {
-//        Text(
-//            text = "Filled",
-//            modifier = Modifier
-//                .padding(16.dp),
-//            textAlign = TextAlign.Center,
-//        )
-//    }
-//}

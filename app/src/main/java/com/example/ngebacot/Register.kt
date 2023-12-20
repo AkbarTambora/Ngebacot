@@ -1,14 +1,9 @@
 package com.example.ngebacot
 
-
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,9 +20,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -40,45 +33,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ngebacot.ui.theme.NgebacotTheme
-
-
-class Register : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            NgebacotTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                )
-                {
-                    BaseCardRegister()
-                }
-            }
-        }
-    }
-}
-
-
+import androidx.navigation.NavHostController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BaseCardRegister() {
+fun Register(
+    navController: NavHostController
+) {
 
 //    confirm password
     val focusManager = LocalFocusManager.current
@@ -86,20 +55,11 @@ fun BaseCardRegister() {
     val showPassword2 = remember { mutableStateOf(false) }
 
 //    warna
-    val abu = Color(0xFFa1a1a1)
     val biruBaseCard = Color(0xFF7C92F5)
     val btnColorLogin = Color(0xFFFF6978)
     val outlineInputColor = Color(0xFFFFFFFF)
 
 //    custom font
-    val provider = GoogleFont.Provider(
-        providerAuthority = "com.google.android.gms.fonts",
-        providerPackage = "com.google.android.gms",
-        certificates = R.array.com_google_android_gms_fonts_certs
-    )
-
-//    val poppinsBold = GoogleFont("poppins_bold")
-
     val poppins = FontFamily (
         androidx.compose.ui.text.font.Font(R.font.poppins_reguler, FontWeight.Normal),
         androidx.compose.ui.text.font.Font(R.font.poppins_medium, FontWeight.Medium),
@@ -119,9 +79,10 @@ fun BaseCardRegister() {
 //    validasi password
     val passwordMismatch = password.isNotEmpty() && password != confirmPassword
     val errorText = if (passwordMismatch) "Password don't macth" else ""
-    Column (
-        verticalArrangement = Arrangement.Center,
+    Box (
         modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
         Card(
             colors = CardDefaults.cardColors(
@@ -129,7 +90,7 @@ fun BaseCardRegister() {
             ),
             modifier = Modifier
                 .size(width = 340.dp, height = 535.dp)
-                .align(alignment = Alignment.CenterHorizontally)
+                .align(Alignment.Center)
         ) {
             Text(
                 fontSize = 18.sp,
@@ -166,7 +127,7 @@ fun BaseCardRegister() {
                     focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
                     unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
                     focusedLabelColor = outlineInputColor, // Warna label saat input fokus
-                    textColor = outlineInputColor, // Warna teks
+
                 ),
                 shape = RoundedCornerShape(50.dp),
 
@@ -187,7 +148,7 @@ fun BaseCardRegister() {
                     focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
                     unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
                     focusedLabelColor = outlineInputColor, // Warna label saat input fokus
-                    textColor = outlineInputColor, // Warna teks
+
                 ),
                 shape = RoundedCornerShape(50.dp),
             )
@@ -228,7 +189,7 @@ fun BaseCardRegister() {
                     focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
                     unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
                     focusedLabelColor = outlineInputColor, // Warna label saat input fokus
-                    textColor = outlineInputColor, // Warna teks
+
                 ),
                 shape = RoundedCornerShape(50.dp),
             )
@@ -246,7 +207,6 @@ fun BaseCardRegister() {
                 isError = passwordMismatch
                 ,
                 singleLine = true,
-//                isError = hasError2 || matchError2.value,
                 visualTransformation =
                 if (showPassword2.value) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
@@ -271,7 +231,7 @@ fun BaseCardRegister() {
                     focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
                     unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
                     focusedLabelColor = outlineInputColor, // Warna label saat input fokus
-                    textColor = outlineInputColor, // Warna teks
+
                 ),
                 shape = RoundedCornerShape(50.dp),
             )
@@ -320,7 +280,9 @@ fun BaseCardRegister() {
                             text = "Log In!",
                             modifier = Modifier
                                 .padding(top = 10.dp, bottom = 10.dp)
-                                .clickable {  }
+                                .clickable {
+                                    navController.navigate("Login")
+                                }
                         )
                     }
                 }
@@ -332,16 +294,4 @@ fun BaseCardRegister() {
 
 fun onClickRegister() {
 
-}
-
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    name = "Dashboard"
-)
-@Composable
-fun RegisterPage() {
-    NgebacotTheme {
-        BaseCardRegister()
-    }
 }
