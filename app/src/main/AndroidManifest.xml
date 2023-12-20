@@ -17,7 +17,6 @@
             android:exported="true"
             android:label=""
             android:theme="@style/Theme.Ngebacot" >
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

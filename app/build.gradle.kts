@@ -76,6 +76,8 @@ dependencies {
     implementation("androidx.navigation:navigation-common:2.7.5")
 //    implement icon
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
+    implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
 
 //    Navigation
     val nav_version = "2.7.6"

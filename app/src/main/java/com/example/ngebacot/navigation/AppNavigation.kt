@@ -52,7 +52,7 @@ fun AppNavigation() {
             }
         },
         bottomBar = {
-            val backgroundColor: Color = Color(0xFF7C92F5)
+            val backgroundColor: Color = Color(0xFF111111)
             NavigationBar(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -74,7 +74,13 @@ fun AppNavigation() {
                                 restoreState = true
                             }
                         },
-                        modifier = Modifier.background(Color.Transparent),
+                        colors = androidx.compose.material3.NavigationBarItemDefaults
+                            .colors(
+                                selectedIconColor = Color(0xFFF1F1F1),
+                                unselectedIconColor =  Color(0xFFF1F1F1),
+                                indicatorColor = Color(0xFF111111)
+                            ),
+//                        modifier = Modifier.background(Color.Transparent),
                         icon = {
                             // Memilih ikon berdasarkan kondisi seleksi
                             val icon =
@@ -88,7 +94,8 @@ fun AppNavigation() {
                                 imageVector = icon,
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .size(32.dp)
+                                    .size(36.dp)
+
                             )
                         },
                     )

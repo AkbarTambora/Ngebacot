@@ -118,7 +118,7 @@ fun iconTwitter() {
                     focusedIndicatorColor = Color(11,10,10),// Ubah warna teks saat fokus
                     cursorColor = Color(11,10,10), // Ubah warna kursor
                     containerColor = Color(239,230,221),
-                    textColor = Color(11,10,10),
+//                    textColor = Color(11,10,10),
                 )
             )
             Button(onClick = { onClick() },

@@ -127,7 +127,7 @@ fun Register(
                     focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
                     unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
                     focusedLabelColor = outlineInputColor, // Warna label saat input fokus
-                    textColor = outlineInputColor, // Warna teks
+
                 ),
                 shape = RoundedCornerShape(50.dp),
 
@@ -148,7 +148,7 @@ fun Register(
                     focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
                     unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
                     focusedLabelColor = outlineInputColor, // Warna label saat input fokus
-                    textColor = outlineInputColor, // Warna teks
+
                 ),
                 shape = RoundedCornerShape(50.dp),
             )
@@ -189,7 +189,7 @@ fun Register(
                     focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
                     unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
                     focusedLabelColor = outlineInputColor, // Warna label saat input fokus
-                    textColor = outlineInputColor, // Warna teks
+
                 ),
                 shape = RoundedCornerShape(50.dp),
             )
@@ -231,7 +231,7 @@ fun Register(
                     focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
                     unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
                     focusedLabelColor = outlineInputColor, // Warna label saat input fokus
-                    textColor = outlineInputColor, // Warna teks
+
                 ),
                 shape = RoundedCornerShape(50.dp),
             )
