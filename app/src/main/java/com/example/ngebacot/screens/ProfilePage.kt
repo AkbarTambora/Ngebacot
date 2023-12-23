@@ -203,7 +203,7 @@ fun ProfilePage(hasError: Boolean = false){
 
 //            Email
             Text(
-                text = "Username",
+                text = "Email",
                 fontSize = 14.sp,
                 color = Color.Gray,
                 modifier = Modifier
@@ -226,7 +226,7 @@ fun ProfilePage(hasError: Boolean = false){
             )
 //            Password
             Text(
-                text = "Username",
+                text = "Password",
                 fontSize = 14.sp,
                 color = Color.Gray,
                 modifier = Modifier
