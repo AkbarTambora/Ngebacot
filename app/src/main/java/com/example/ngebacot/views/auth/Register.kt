@@ -1,10 +1,8 @@
-package com.example.ngebacot
+package com.example.ngebacot.views.auth
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-//import androidx.compose.foundation.layout.FlowRowScopeInstance.align
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -15,13 +13,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -37,22 +35,26 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.ngebacot.ui.theme.NgebacotTheme
+import com.example.ngebacot.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Login(
-    hasError: Boolean = false,
+fun Register(
     navController: NavHostController
 ) {
+
+//    confirm password
+    val focusManager = LocalFocusManager.current
+    val showPassword = remember { mutableStateOf(false) }
+    val showPassword2 = remember { mutableStateOf(false) }
+
+//    warna
     val biruBaseCard = Color(0xFF7C92F5)
     val btnColorLogin = Color(0xFFFF6978)
     val outlineInputColor = Color(0xFFFFFFFF)
@@ -64,18 +66,20 @@ fun Login(
         androidx.compose.ui.text.font.Font(R.font.poppins_semibold, FontWeight.SemiBold),
         androidx.compose.ui.text.font.Font(R.font.poppins_bold, FontWeight.Bold)
     )
+
     val logoBacot = FontFamily(
         androidx.compose.ui.text.font.Font(R.font.adlamdisplay_reguler, FontWeight.Normal)
     )
 
-    var text by remember { mutableStateOf("")}
-    var text2 by remember { mutableStateOf("")}
+    var email by remember { mutableStateOf("")}
+    var username by remember { mutableStateOf("")}
+    var password by remember { mutableStateOf("")}
+    var confirmPassword by remember { mutableStateOf("")}
 
-//    kode untuk hide or not pw
-    val focusManager = LocalFocusManager.current
-    val showPassword = remember { mutableStateOf(false) }
-
-    Box(
+//    validasi password
+    val passwordMismatch = password.isNotEmpty() && password != confirmPassword
+    val errorText = if (passwordMismatch) "Password don't macth" else ""
+    Box (
         modifier = Modifier
             .fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -85,7 +89,7 @@ fun Login(
                 containerColor = biruBaseCard,
             ),
             modifier = Modifier
-                .size(width = 340.dp, height = 380.dp)
+                .size(width = 340.dp, height = 535.dp)
                 .align(Alignment.Center)
         ) {
             Text(
@@ -93,7 +97,7 @@ fun Login(
                 fontFamily = poppins,
                 fontWeight = FontWeight.Normal,
                 color = Color.White,
-                text = "Welcome Back",
+                text = "Let's Join Us!",
                 modifier = Modifier
                     .padding(top = 15.dp)
                     .align(alignment = Alignment.CenterHorizontally),
@@ -104,12 +108,35 @@ fun Login(
                 color = Color(245, 245, 245),
                 text = "Ngebacot",
                 modifier = Modifier
-                    .padding(bottom = 7.dp)
+                    .padding(bottom = 10.dp)
                     .align(alignment = Alignment.CenterHorizontally)
             )
+//            Email
             OutlinedTextField(
-                value = text,
-                onValueChange = { text = it },
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                modifier = Modifier
+                    .height(75.dp)
+                    .width(270.dp)
+                    .align(alignment = Alignment.CenterHorizontally)
+                    .padding(bottom = 15.dp)
+                ,
+                singleLine = true,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
+                    unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
+                    focusedLabelColor = outlineInputColor, // Warna label saat input fokus
+
+                ),
+                shape = RoundedCornerShape(50.dp),
+
+
+            )
+//            Username
+            OutlinedTextField(
+                value = username,
+                onValueChange = { newText -> username = newText },
                 label = { Text("Username") },
                 modifier = Modifier
                     .height(75.dp)
@@ -117,7 +144,6 @@ fun Login(
                     .align(alignment = Alignment.CenterHorizontally)
                     .padding(bottom = 15.dp)
                 ,
-                singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
                     unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
@@ -125,12 +151,11 @@ fun Login(
 
                 ),
                 shape = RoundedCornerShape(50.dp),
-
-
-                )
+            )
+//          Password
             OutlinedTextField(
-                value = text2,
-                onValueChange = { newText -> text2 = newText },
+                value = password,
+                onValueChange = { newText -> password = newText },
                 label = { Text("Password") },
                 modifier = Modifier
                     .height(75.dp)
@@ -138,22 +163,15 @@ fun Login(
                     .align(alignment = Alignment.CenterHorizontally)
                     .padding(bottom = 15.dp)
                 ,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
-                    unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
-                    focusedLabelColor = outlineInputColor, // Warna label saat input fokus
-
-                ),
-                shape = RoundedCornerShape(50.dp),
-//                kode tambahan untuk hide or nor pw
                 singleLine = true,
-                isError = hasError,
-                visualTransformation = if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
+//                isError = hasError || matchError.value,
+                visualTransformation =
+                if (showPassword.value) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     val (icon, iconColor) = if (showPassword.value) {
                         Pair(
                             Icons.Filled.Visibility,
-                            colorResource(id = R.color.white)
+                            colorResource(id = R.color.teal_200)
                         )
                     } else {
                         Pair(Icons.Filled.VisibilityOff, colorResource(id = R.color.white))
@@ -167,20 +185,81 @@ fun Login(
                         )
                     }
                 },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
+                    unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
+                    focusedLabelColor = outlineInputColor, // Warna label saat input fokus
+
+                ),
+                shape = RoundedCornerShape(50.dp),
             )
+//            Confirm Password
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = { newText -> confirmPassword = newText },
+                label = { Text("Confirm Password") },
+                modifier = Modifier
+                    .height(75.dp)
+                    .width(270.dp)
+                    .align(alignment = Alignment.CenterHorizontally)
+                    .padding(bottom = 15.dp)
+                ,
+                isError = passwordMismatch
+                ,
+                singleLine = true,
+                visualTransformation =
+                if (showPassword2.value) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val (icon, iconColor) = if (showPassword2.value) {
+                        Pair(
+                            Icons.Filled.Visibility,
+                            colorResource(id = R.color.teal_200)
+                        )
+                    } else {
+                        Pair(Icons.Filled.VisibilityOff, colorResource(id = R.color.white))
+                    }
+
+                    IconButton(onClick = { showPassword2.value = !showPassword2.value }) {
+                        Icon(
+                            icon,
+                            contentDescription = "Visibility",
+                            tint = iconColor
+                        )
+                    }
+                },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
+                    unfocusedBorderColor = outlineInputColor, // Warna outline saat input tidak fokus
+                    focusedLabelColor = outlineInputColor, // Warna label saat input fokus
+
+                ),
+                shape = RoundedCornerShape(50.dp),
+            )
+            if (passwordMismatch) {
+                Text(
+                    text = errorText,
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                        .padding( start = 90.dp)
+                )
+            }
             Row(modifier = Modifier
                 .align(alignment = Alignment.CenterHorizontally)) {
-                Column() {
-                    Button(onClick = { onClick() },
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Button(onClick = { onClickRegister() },
                         modifier = Modifier
                             .height(60.dp)
                             .width(270.dp)
-                            .padding(top = 15.dp)
+                            .padding(top = 10.dp)
                         ,
+                        enabled = !passwordMismatch,
                         shape = RoundedCornerShape(50.dp),
                         colors = ButtonDefaults.buttonColors(btnColorLogin)
                     ) {
-                        Text("Login", fontSize = 20.sp, fontFamily = poppins, fontWeight = FontWeight.Medium)
+                        Text("Register", fontSize = 20.sp, fontFamily = poppins, fontWeight = FontWeight.Medium)
                     }
                     Row {
                         Text(
@@ -188,7 +267,7 @@ fun Login(
                             fontFamily = poppins,
                             fontWeight = FontWeight.Normal,
                             color = Color.White,
-                            text = "Don’t have an account? ",
+                            text = "Already have an account? ",
                             modifier = Modifier
                                 .padding(top = 10.dp, bottom = 10.dp)
                         )
@@ -198,11 +277,11 @@ fun Login(
                             fontWeight = FontWeight.Normal,
                             textDecoration = Underline,
                             color = Color.White,
-                            text = "Register",
+                            text = "Log In!",
                             modifier = Modifier
                                 .padding(top = 10.dp, bottom = 10.dp)
                                 .clickable {
-                                    navController.navigate("Register")
+                                    navController.navigate("Login")
                                 }
                         )
                     }
@@ -213,6 +292,6 @@ fun Login(
 
 }
 
-fun onClick() {
+fun onClickRegister() {
 
 }
