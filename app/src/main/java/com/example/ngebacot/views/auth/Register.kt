@@ -41,7 +41,13 @@ import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import com.example.ngebacot.R
+import com.example.ngebacot.core.data.remote.client.ApiService
+import com.example.ngebacot.core.utils.AppConstants
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,7 +84,16 @@ fun Register(
 
 //    validasi password
     val passwordMismatch = password.isNotEmpty() && password != confirmPassword
-    val errorText = if (passwordMismatch) "Password don't macth" else ""
+    val errorText = if (passwordMismatch) "Password doesn't match" else ""
+
+    LaunchedEffect(passwordMismatch) {
+        if (passwordMismatch) {
+            // Tunggu sebentar sebelum menampilkan pesan kesalahan
+            delay(100)
+            focusManager.clearFocus()
+        }
+    }
+
     Box (
         modifier = Modifier
             .fillMaxSize(),
@@ -293,5 +308,42 @@ fun Register(
 }
 
 fun onClickRegister() {
+    val baseUrl = AppConstants.BASE_URL
+    val registerEndpoint = "api/register" // Sesuaikan dengan endpoint registrasi di server
 
+    val emailValue = email
+    val usernameValue = username
+    val passwordValue = password
+    val confirmPasswordValue = confirmPassword
+
+    // Pastikan bahwa password dan konfirmasi password sesuai
+    if (passwordValue == confirmPasswordValue) {
+        val registerData = RegisterRequest(emailValue, usernameValue, passwordValue)
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val apiService = retrofit.create(ApiService::class.java)
+
+        try {
+            val response = apiService.register(registerData)
+
+            if (response.isSuccessful) {
+                // Registrasi berhasil
+                println("Registrasi berhasil")
+            } else {
+                // Terjadi kesalahan saat registrasi
+                println("Registrasi gagal. Status code: ${response.code()}")
+                println("Response body: ${response.errorBody()?.string()}")
+            }
+        } catch (e: Exception) {
+            // Tangani kesalahan koneksi atau kesalahan lainnya
+            println("Error: ${e.message}")
+        }
+    } else {
+        // Tampilkan pesan bahwa password dan konfirmasi password tidak sesuai
+        println("Password dan konfirmasi password tidak sesuai")
+    }
 }
