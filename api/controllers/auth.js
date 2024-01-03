@@ -2,7 +2,7 @@ import { db } from "../connect.js"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
-
+//End Point Register
 export const register = (req, res) => {
     /*
         Check error data
@@ -74,6 +74,7 @@ export const register = (req, res) => {
 
 };
 
+// EndPoint Login
 export const login = (req, res) => {
     const { username, password } = req.body;
 
@@ -107,7 +108,7 @@ export const login = (req, res) => {
 };
 
 
-
+//End Point Logout
 export const logout = (req, res) => {
     res.clearCookie("accessToken", {
         secure: true,
