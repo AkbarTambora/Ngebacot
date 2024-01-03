@@ -1,4 +1,7 @@
 package com.example.ngebacot.core.domain.model
 
-class UserModel {
-}
+data class UserModel (
+    val id: Int,
+    val email: String,
+    val username: String,
+)
