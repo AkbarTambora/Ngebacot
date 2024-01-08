@@ -16,6 +16,8 @@ export const register = (req, res) => {
         errors.username = ["Username must not be blank"];
     } else if (username.length < 6) {
         errors.username = ["Username must be at least 6 characters long"];
+    } else if (username.includes(' ')){
+        errors.username = ["Username cannot contain spaces"];
     }
 
     if (!email) {
@@ -70,33 +72,25 @@ export const register = (req, res) => {
             return res.status(200).json({ message: "User has been created." });
         });
     });
-
-
 };
 
 // EndPoint Login
 export const login = (req, res) => {
-    const { usernameOrEmail, password } = req.body;
+    const { username, password } = req.body;
 
-    const q = "SELECT * FROM users WHERE username = ? OR email = ?";
-    db.query(q, [usernameOrEmail, usernameOrEmail], (err, data) => {
-        if (err) {
-            return res.status(500).json({ message: "Server Error" });
-        }
-        if (data.length === 0) {
-            return res.status(401).json({ message: "Wrong username or email" });
-        }
+    const q = "SELECT * FROM users WHERE username = ?";
+    db.query(q, [username], (err, data) => {
+        if (err) return res.status(500).json({ message: "Server Error" });
+        if (data.length === 0) return res.status(404).json({ message: "User not found!" });
 
         const checkPassword = bcrypt.compareSync(password, data[0].password);
-        if (!checkPassword) {
-            return res.status(401).json({ message: "Wrong password" });
-        }
+        if (!checkPassword) return res.status(401).json({ message: "Wrong password or username" });
 
         const token = jwt.sign({ id: data[0].id }, "secretkey");
         const { password: userPassword, ...userInfo } = data[0];
 
         //JWT TOKEN AND SEND DATA
-        res.status(200).header("Authorization", `Bearer ${token}`).json({
+        res.status(200).header("Authorization",`Bearer ${token}`).json({
             "jwt-token": token,
             user: {
                 id: userInfo.id,
