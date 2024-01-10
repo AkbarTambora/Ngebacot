@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.ngebacot.R
 import com.example.ngebacot.core.data.remote.client.ApiService
+import com.example.ngebacot.core.data.remote.response.LoginResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -214,11 +215,15 @@ fun Login(
 
 }
 
+
+/*
+*  Handle api data login, dont forget to see http response and code thankyou
+*/
 fun onClick() {
     val username = text
     val password = text2
 
-    val loginRequest = LoginRequest(username, password)
+    val loginRequest = LoginResponse(username, password)
 
     // Pangil fungsi Retrofit untuk login
     CoroutineScope(Dispatchers.IO).launch {

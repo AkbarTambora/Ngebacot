@@ -47,6 +47,7 @@ import com.example.ngebacot.R
 import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.utils.AppConstants
 import androidx.compose.runtime.LaunchedEffect
+import com.example.ngebacot.core.data.remote.response.RegisterResponse
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -318,7 +319,7 @@ fun onClickRegister() {
 
     // Pastikan bahwa password dan konfirmasi password sesuai
     if (passwordValue == confirmPasswordValue) {
-        val registerData = RegisterRequest(emailValue, usernameValue, passwordValue)
+        val registerData = RegisterResponse(emailValue, usernameValue, passwordValue)
 
         val retrofit = Retrofit.Builder()
             .baseUrl(baseUrl)

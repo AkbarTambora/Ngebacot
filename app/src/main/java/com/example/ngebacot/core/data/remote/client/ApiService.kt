@@ -22,4 +22,6 @@ interface ApiService {
 
     @POST("logout")
     suspend fun logout(): ResponseBody
+
+    companion object
 }
