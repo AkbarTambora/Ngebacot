@@ -43,6 +43,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.ngebacot.R
+import com.example.ngebacot.core.data.remote.client.ApiService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -211,5 +215,16 @@ fun Login(
 }
 
 fun onClick() {
+    val username = text
+    val password = text2
+
+    val loginRequest = LoginRequest(username, password)
+
+    // Pangil fungsi Retrofit untuk login
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = ApiService.loginUser(loginRequest)
+        }
+    }
 
 }
