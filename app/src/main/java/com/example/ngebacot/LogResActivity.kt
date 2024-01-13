@@ -16,11 +16,11 @@ class LogResActivity :ComponentActivity() {
             val navController = rememberNavController()
 
             NavHost(navController = navController, startDestination = "Login"){
-                composable("Register"){
-                    Register(navController = navController)
-                }
                 composable("Login"){
                     Login(navController = navController)
+                }
+                composable("Register"){
+                    Register(navController = navController)
                 }
             }
         }

@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.R
 import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.data.remote.response.LoginResponse
@@ -53,7 +54,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun Login(
     hasError: Boolean = false,
-    navController: NavHostController
+    navController: NavHostController = rememberNavController()
 ) {
     val biruBaseCard = Color(0xFF7C92F5)
     val btnColorLogin = Color(0xFFFF6978)
@@ -226,10 +227,10 @@ fun onClick(text: String, text2: String) {
     val loginRequest = LoginResponse(username, password)
 
     // Pangil fungsi Retrofit untuk login
-    CoroutineScope(Dispatchers.IO).launch {
+    /*CoroutineScope(Dispatchers.IO).launch {
         try {
             val response = ApiService.loginUser(loginRequest)
         }
-    }
+    }*/
 
 }

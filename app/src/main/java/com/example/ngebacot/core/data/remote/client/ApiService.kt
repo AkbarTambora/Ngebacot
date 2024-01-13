@@ -11,16 +11,18 @@ import retrofit2.http.POST
 interface ApiService {
 
     //End Point Register
-    @POST("register")
-    suspend fun register(@Body request: RegisterResponse): ResponseBody
+    @POST("api/auth/register")
+    suspend fun register(
+        @Body RequestBody: RegisterResponse
+    ): Response<AuthResponse>
 
     //Endpoint Login
-    @POST("login")
+    @POST("api/auth/login")
     suspend fun login(
         @Body RequestBody: LoginResponse
     ): Response<AuthResponse>
 
-    @POST("logout")
+    @POST("api/auth/logout")
     suspend fun logout(): ResponseBody
 
     companion object

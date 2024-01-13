@@ -43,25 +43,6 @@ import androidx.compose.ui.unit.sp
 import com.example.ngebacot.views.auth.onClick
 import com.example.ngebacot.ui.theme.NgebacotTheme
 import com.example.ngebacot.ui.theme.btnColorLogin
-
-
-//class iconTwitter : ComponentActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContent {
-//            NgebacotTheme {
-//                // A surface container using the 'background' color from the theme
-//                Surface(
-//                    modifier = Modifier.fillMaxSize(),
-//                    color = MaterialTheme.colorScheme.background
-//                )
-//                {
-//                    ComposableWithPencilIcon()
-//                }
-//            }
-//        }
-//    }
-//}
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun iconTwitter() {
@@ -121,13 +102,15 @@ fun iconTwitter() {
 //                    textColor = Color(11,10,10),
                 )
             )
-            Button(onClick = { onClick() },
+            Button(
+                onClick = {
+                    onClick(text) // Make sure to call the correct function and pass the required parameters
+                },
                 modifier = Modifier
                     .height(65.dp)
                     .width(90.dp)
                     .padding(top = 30.dp)
-                    .offset( x = 280.dp)
-                ,
+                    .offset(x = 280.dp),
                 shape = RoundedCornerShape(50.dp),
                 colors = ButtonDefaults.buttonColors(btnColorLogin)
             ) {
@@ -178,6 +161,11 @@ fun iconTwitter() {
             }
         }
     }
+}
+
+fun onClick(text: String) {
+    println("Clicked with text: $text")
+
 }
 
 @Preview(showBackground = true)

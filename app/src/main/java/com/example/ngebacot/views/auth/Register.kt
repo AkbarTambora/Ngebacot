@@ -47,28 +47,20 @@ import com.example.ngebacot.R
 import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.utils.AppConstants
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.core.data.remote.response.RegisterResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
-
-
-//data class UserRegister(
-//    val email: String,
-//    val username: String,
-//    val password: String,
-//    val confirmPassword: String
-//)
-
-// private val ResponseBody.isSuccessful: Boolean
-//    get() {}
+import java.lang.Exception
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Register(
-    navController: NavHostController
+    navController: NavHostController = rememberNavController()
 ) {
 
 //    confirm password
@@ -110,6 +102,11 @@ fun Register(
         }
     }
 
+    /*
+    *   Untuk memperbaiki error Compossable invocations can only happen from the
+    * context of a @composable function
+    */
+    val coroutineScope = rememberCoroutineScope()
     Box (
         modifier = Modifier
             .fillMaxSize(),
@@ -280,7 +277,12 @@ fun Register(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Button(onClick = { onClickRegister(email, username, password) },
+                    Button(onClick = {
+                        // using coroutinScope Launch a coroutine to call the suspend function
+                       coroutineScope.launch{
+                           onClickRegister(email, username, password)
+                       }
+                    },
                         modifier = Modifier
                             .height(60.dp)
                             .width(270.dp)
@@ -325,7 +327,6 @@ fun Register(
 
 suspend fun onClickRegister(email: String, username: String, password: String) {
     val baseUrl = AppConstants.BASE_URL
-    val registerEndpoint = "api/register" // Sesuaikan dengan endpoint registrasi di server
 
     val emailValue = email
     val usernameValue = username
@@ -341,33 +342,23 @@ suspend fun onClickRegister(email: String, username: String, password: String) {
 
     val apiService = retrofit.create(ApiService::class.java)
 
-    val scope = CoroutineScope(Dispatchers.IO)
-
-    scope.launch {
+    try {
         val response = apiService.register(registerData)
 
-        if (response.isSuccessful) {
-            // Registrasi berhasil
-            println("Registrasi berhasil")
-        } else {
-            // Terjadi kesalahan saat registrasi
-            println("Registrasi gagal. Status code: ${response.code()}")
+        if (response.isSuccessful){
+            // Register berhasil
+            val authResponse = response.body()
+            println("Registration successful. Auth token: ${authResponse?.jwtToken}")
+        }else{
+            // Error occurred during registration
+            println("Registration failed. Status code: ${response.code()}")
             println("Response body: ${response.errorBody()?.string()}")
         }
+    }catch (e: Exception){
+        // Tangani kesalahan koneksi atau kesalahan lainnya
+        println("Error: ${e.message}")
     }
+
+
 }
-//    try {
-//        val response = apiService.register(registerData)
-//
-//        if (response.isSuccessful) {
-//            // Registrasi berhasil
-//            println("Registrasi berhasil")
-//        } else {
-//            // Terjadi kesalahan saat registrasi
-//            println("Registrasi gagal. Status code: ${response.code()}")
-//            println("Response body: ${response.errorBody()?.string()}")
-//        }
-//    } catch (e: Exception) {
-//        // Tangani kesalahan koneksi atau kesalahan lainnya
-//        println("Error: ${e.message}")
-//    }
+
