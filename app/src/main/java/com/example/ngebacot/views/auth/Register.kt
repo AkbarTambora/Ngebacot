@@ -49,6 +49,14 @@ import com.example.ngebacot.core.utils.AppConstants
 import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.delay
 
+
+//data class UserRegister(
+//    val email: String,
+//    val username: String,
+//    val password: String,
+//    val confirmPassword: String
+//)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Register(
@@ -264,7 +272,7 @@ fun Register(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Button(onClick = { onClickRegister() },
+                    Button(onClick = { onClickRegister(email, username, password, confirmPassword) },
                         modifier = Modifier
                             .height(60.dp)
                             .width(270.dp)
@@ -307,43 +315,37 @@ fun Register(
 
 }
 
-fun onClickRegister() {
+suspend fun onClickRegister(email: String, username: String, password: String, confirmPassword: String) {
     val baseUrl = AppConstants.BASE_URL
     val registerEndpoint = "api/register" // Sesuaikan dengan endpoint registrasi di server
 
     val emailValue = email
     val usernameValue = username
     val passwordValue = password
-    val confirmPasswordValue = confirmPassword
 
     // Pastikan bahwa password dan konfirmasi password sesuai
-    if (passwordValue == confirmPasswordValue) {
-        val registerData = RegisterRequest(emailValue, usernameValue, passwordValue)
+    val registerData = RegisterRequest(emailValue, usernameValue, passwordValue)
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+    val retrofit = Retrofit.Builder()
+        .baseUrl(baseUrl)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
 
-        val apiService = retrofit.create(ApiService::class.java)
+    val apiService = retrofit.create(ApiService::class.java)
 
-        try {
-            val response = apiService.register(registerData)
+    try {
+        val response = apiService.register(registerData)
 
-            if (response.isSuccessful) {
-                // Registrasi berhasil
-                println("Registrasi berhasil")
-            } else {
-                // Terjadi kesalahan saat registrasi
-                println("Registrasi gagal. Status code: ${response.code()}")
-                println("Response body: ${response.errorBody()?.string()}")
-            }
-        } catch (e: Exception) {
-            // Tangani kesalahan koneksi atau kesalahan lainnya
-            println("Error: ${e.message}")
+        if (response.isSuccessful) {
+            // Registrasi berhasil
+            println("Registrasi berhasil")
+        } else {
+            // Terjadi kesalahan saat registrasi
+            println("Registrasi gagal. Status code: ${response.code()}")
+            println("Response body: ${response.errorBody()?.string()}")
         }
-    } else {
-        // Tampilkan pesan bahwa password dan konfirmasi password tidak sesuai
-        println("Password dan konfirmasi password tidak sesuai")
+    } catch (e: Exception) {
+        // Tangani kesalahan koneksi atau kesalahan lainnya
+        println("Error: ${e.message}")
     }
 }
