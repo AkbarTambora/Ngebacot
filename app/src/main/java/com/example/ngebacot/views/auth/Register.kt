@@ -47,7 +47,9 @@ import com.example.ngebacot.R
 import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.utils.AppConstants
 import androidx.compose.runtime.LaunchedEffect
+import com.example.ngebacot.core.data.remote.response.RegisterResponse
 import kotlinx.coroutines.delay
+import okhttp3.ResponseBody
 
 
 //data class UserRegister(
@@ -56,6 +58,9 @@ import kotlinx.coroutines.delay
 //    val password: String,
 //    val confirmPassword: String
 //)
+
+private val ResponseBody.isSuccessful: Boolean
+    get() {}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -324,7 +329,7 @@ suspend fun onClickRegister(email: String, username: String, password: String, c
     val passwordValue = password
 
     // Pastikan bahwa password dan konfirmasi password sesuai
-    val registerData = RegisterRequest(emailValue, usernameValue, passwordValue)
+    val registerData = RegisterResponse(emailValue, usernameValue, passwordValue)
 
     val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
@@ -348,4 +353,5 @@ suspend fun onClickRegister(email: String, username: String, password: String, c
         // Tangani kesalahan koneksi atau kesalahan lainnya
         println("Error: ${e.message}")
     }
+
 }

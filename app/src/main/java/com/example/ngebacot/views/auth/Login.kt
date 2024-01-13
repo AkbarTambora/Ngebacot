@@ -173,7 +173,7 @@ fun Login(
             Row(modifier = Modifier
                 .align(alignment = Alignment.CenterHorizontally)) {
                 Column() {
-                    Button(onClick = { onClick() },
+                    Button(onClick = { onClick(text, text2) },
                         modifier = Modifier
                             .height(60.dp)
                             .width(270.dp)
@@ -219,7 +219,7 @@ fun Login(
 /*
 *  Handle api data login, dont forget to see http response and code thankyou
 */
-fun onClick() {
+fun onClick(text: String, text2: String) {
     val username = text
     val password = text2
 
