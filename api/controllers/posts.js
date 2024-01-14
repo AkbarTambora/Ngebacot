@@ -15,7 +15,7 @@ export const getPosts = (req, res) => {
     jwt.verify(token, "secretkey", (err, userInfo) => {
         if (err) return res.status(403).json("Token is not valid!");
 
-        console.log(userId);
+        console.log("userId:", userId);
 
         const q =
             userId !== "undefined"
@@ -28,7 +28,13 @@ export const getPosts = (req, res) => {
             userId !== "undefined" ? [userId] : [userInfo.id, userInfo.id];
 
         db.query(q, values, (err, data) => {
-            if (err) return res.status(500).json(err);
+            if (err) {
+                console.error(err);
+                return res.status(500).json(err);
+            }
+
+            console.log("Query Result:", data);
+
             return res.status(200).json(data);
         });
     });
