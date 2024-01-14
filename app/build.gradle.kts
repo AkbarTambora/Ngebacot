@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     //kotlin("kapt")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.6.0"
 }
 
 android {
@@ -49,6 +50,8 @@ android {
         }
     }
 }
+
+
 
 dependencies {
     implementation("io.ktor:ktor-client-core:2.3.7")
@@ -102,6 +105,12 @@ dependencies {
 
     // Jetpack Compose Integration
     implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    // Serialization for text to json format
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.jetbrains.kotlin:kotlin-serialization-compiler-plugin-embeddable:1.9.22")
+
 
     // Retrofit API Library
     val retrofitVersion = "2.9.0"

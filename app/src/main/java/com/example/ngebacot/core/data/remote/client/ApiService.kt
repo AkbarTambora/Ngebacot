@@ -13,7 +13,7 @@ interface ApiService {
     //End Point Register
     @POST("api/auth/register")
     suspend fun register(
-        @Body RequestBody: RegisterResponse
+        @Body RequestBody: String
     ): Response<AuthResponse>
 
     //Endpoint Login

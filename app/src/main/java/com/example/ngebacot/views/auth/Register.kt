@@ -51,13 +51,32 @@ import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.core.data.remote.response.RegisterResponse
 import kotlinx.coroutines.launch
 import java.lang.Exception
-import com.example.ngebacot.views.auth.Login
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.encodeToJsonElement
+
+@Serializable
+class UserRegister() {
+    var email by mutableStateOf("")
+    var username by mutableStateOf("")
+    var password by mutableStateOf("")
+    var confirmPassword by mutableStateOf("")
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Register(
     navController: NavHostController = rememberNavController()
 ) {
+
+//
+//    data class UserRegister(
+//        val email: String,
+//        val username: String,
+//        val password: String,
+//        val confirmPassword: String
+//    )
 
 //    confirm password
     val focusManager = LocalFocusManager.current
@@ -81,13 +100,14 @@ fun Register(
         androidx.compose.ui.text.font.Font(R.font.adlamdisplay_reguler, FontWeight.Normal)
     )
 
-    var email by remember { mutableStateOf("")}
-    var username by remember { mutableStateOf("")}
-    var password by remember { mutableStateOf("")}
-    var confirmPassword by remember { mutableStateOf("")}
+    val user = remember {UserRegister()}
+//    var email by remember { mutableStateOf("")}
+//    var username by remember { mutableStateOf("")}
+//    var password by remember { mutableStateOf("")}
+//    var confirmPassword by remember { mutableStateOf("")}
 
 //    validasi password
-    val passwordMismatch = password.isNotEmpty() && password != confirmPassword
+    val passwordMismatch = user.password.isNotEmpty() && user.password != user.confirmPassword
     val errorText = if (passwordMismatch) "Password doesn't match" else ""
 
 //    LaunchedEffect(passwordMismatch) {
@@ -137,8 +157,8 @@ fun Register(
             )
 //            Email
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
+                value = user.email,
+                onValueChange = { user.email = it },
                 label = { Text("Email") },
                 modifier = Modifier
                     .height(75.dp)
@@ -159,8 +179,8 @@ fun Register(
             )
 //            Username
             OutlinedTextField(
-                value = username,
-                onValueChange = { newText -> username = newText },
+                value = user.username,
+                onValueChange = { newText -> user.username = newText },
                 label = { Text("Username") },
                 modifier = Modifier
                     .height(75.dp)
@@ -178,8 +198,8 @@ fun Register(
             )
 //          Password
             OutlinedTextField(
-                value = password,
-                onValueChange = { newText -> password = newText },
+                value = user.password,
+                onValueChange = { newText -> user.password = newText },
                 label = { Text("Password") },
                 modifier = Modifier
                     .height(75.dp)
@@ -219,8 +239,8 @@ fun Register(
             )
 //            Confirm Password
             OutlinedTextField(
-                value = confirmPassword,
-                onValueChange = { newText -> confirmPassword = newText },
+                value = user.confirmPassword,
+                onValueChange = { newText -> user.confirmPassword = newText },
                 label = { Text("Confirm Password") },
                 modifier = Modifier
                     .height(75.dp)
@@ -276,7 +296,7 @@ fun Register(
                     Button(onClick = {
                         // using coroutinScope Launch a coroutine to call the suspend function
                        coroutineScope.launch{
-                           onClickRegister(email, username, password)
+                           onClickRegister(user.email, user.username, user.password)
                        }
                     },
                         modifier = Modifier
@@ -321,11 +341,15 @@ fun Register(
 
 }
 
+
 suspend fun onClickRegister(email: String, username: String, password: String) {
     val baseUrl = AppConstants.BASE_URL
 
     // Pastikan bahwa password dan konfirmasi password sesuai
-    val registerData = RegisterResponse(email, username, password)
+    //val registData = RegisterResponse(email, username, password)
+    val registData = UserRegister()
+    val registerData = Json.encodeToString(registData)
+    //val registerData = Json.encodeToJsonElement(registeData)
 
     val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
@@ -351,6 +375,8 @@ suspend fun onClickRegister(email: String, username: String, password: String) {
         println("Error: ${e.message}")
     }
 
+    // buat class udah, sekarang class nya gimana biar bisa di kirim dalam bentuk json
+    // pake serialization
 
 }
 
