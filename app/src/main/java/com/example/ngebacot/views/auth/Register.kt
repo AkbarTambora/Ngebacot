@@ -24,10 +24,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,16 +46,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 import com.example.ngebacot.R
 import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.utils.AppConstants
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.core.data.remote.response.RegisterResponse
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import okhttp3.ResponseBody
 import java.lang.Exception
+import com.example.ngebacot.views.auth.Login
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,13 +90,13 @@ fun Register(
     val passwordMismatch = password.isNotEmpty() && password != confirmPassword
     val errorText = if (passwordMismatch) "Password doesn't match" else ""
 
-    LaunchedEffect(passwordMismatch) {
-        if (passwordMismatch) {
-            // Tunggu sebentar sebelum menampilkan pesan kesalahan
-            delay(100)
-            focusManager.clearFocus()
-        }
-    }
+//    LaunchedEffect(passwordMismatch) {
+//        if (passwordMismatch) {
+//            // Tunggu sebentar sebelum menampilkan pesan kesalahan
+//            delay(100)
+//            focusManager.clearFocus()
+//        }
+//    }
 
     /*
     *   Untuk memperbaiki error Compossable invocations can only happen from the
@@ -328,12 +324,8 @@ fun Register(
 suspend fun onClickRegister(email: String, username: String, password: String) {
     val baseUrl = AppConstants.BASE_URL
 
-    val emailValue = email
-    val usernameValue = username
-    val passwordValue = password
-
     // Pastikan bahwa password dan konfirmasi password sesuai
-    val registerData = RegisterResponse(emailValue, usernameValue, passwordValue)
+    val registerData = RegisterResponse(email, username, password)
 
     val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)

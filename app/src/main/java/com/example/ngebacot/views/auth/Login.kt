@@ -44,11 +44,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.R
-import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.data.remote.response.LoginResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.example.ngebacot.views.auth.Register
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -225,9 +224,10 @@ fun onClick(text: String, text2: String) {
     val password = text2
 
     val loginRequest = LoginResponse(username, password)
+    val scope = CoroutineScope(Dispatchers.IO)
 
     // Pangil fungsi Retrofit untuk login
-    /*CoroutineScope(Dispatchers.IO).launch {
+    /*scope.launch {
         try {
             val response = ApiService.loginUser(loginRequest)
         }
