@@ -56,7 +56,7 @@ export const register = (req, res) => {
         const emailFormat = /\S+@\S+\.\S+/;
         const isValidEmail = emailFormat.test(email);
         if (!isValidEmail) {
-            return res.status(400).json({ message: "Invalid email format!" });
+            return res.status(403).json({ message: "Invalid email format!" });
         }
 
         // Hash the password and create a new user
@@ -84,7 +84,7 @@ export const login = (req, res) => {
         if (data.length === 0) return res.status(404).json({ message: "User not found!" });
 
         const checkPassword = bcrypt.compareSync(password, data[0].password);
-        if (!checkPassword) return res.status(401).json({ message: "Wrong password or username" });
+        if (!checkPassword) return res.status(403).json({ message: "Wrong password or username" });
 
         const token = jwt.sign({ id: data[0].id }, "secretkey");
         const { password: userPassword, ...userInfo } = data[0];

@@ -53,7 +53,7 @@ export const addPost = (req, res) => {
 
         const {caption, img} = req.body;
         if(!caption){
-            return res.status(401).json("Caption is required!");
+            return res.status(403).json("Caption is required!");
         }
 
         /*
