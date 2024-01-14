@@ -45,13 +45,25 @@ export const addPost = (req, res) => {
 
     jwt.verify(token, "secretkey", (err, userInfo) => {
         if (err) return res.status(403).json("Authentication not valid or Token is not valid!");
-        console.log(userInfo); // Log decoded user information
 
+
+        /*
+            Validation Post
+         */
+
+        const {caption, img} = req.body;
+        if(!caption){
+            return res.status(401).json("Caption is required!");
+        }
+
+        /*
+            Query Database
+         */
         const q =
             "INSERT INTO posts(`caption`, `img`, `created_at`, `userId`) VALUES (?)";
         const values = [
-            req.body.caption,
-            req.body.img,
+            caption,
+            img || null,
             moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
             userInfo.id,
         ];
@@ -64,8 +76,12 @@ export const addPost = (req, res) => {
 };
 
 export const deletePost = (req, res) => {
-    const token = req.cookies.accessToken;
-    if (!token) return res.status(401).json("Not logged in!");
+    const authorizationHeader = req.headers['authorization'];
+    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
+        return res.status(401).json("Not logged in !")
+    }
+
+    const token = authorizationHeader.split(' ')[1]; 
 
     jwt.verify(token, "secretkey", (err, userInfo) => {
         if (err) return res.status(403).json("Token is not valid!");
