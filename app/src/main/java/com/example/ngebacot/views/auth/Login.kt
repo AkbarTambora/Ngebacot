@@ -44,10 +44,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.R
+import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.data.remote.response.LoginResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import com.example.ngebacot.views.auth.Register
+import kotlinx.coroutines.launch
+import java.lang.Exception
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -224,85 +227,48 @@ fun onClick(text: String, text2: String) {
     val password = text2
 
     val loginRequest = LoginResponse(username, password)
-    val scope = CoroutineScope(Dispatchers.IO)
+    val apiService = ApiService.create()
 
-    // Pangil fungsi Retrofit untuk login
-    /*scope.launch {
+    CoroutineScope(Dispatchers.IO).launch{
         try {
-            val response = ApiService.loginUser(loginRequest)
-        }
-    }*/
+            val response = apiService.login(loginRequest)
 
-    //End Point Register
-//    export const register = (req, res) => {
-//        /*
-//            Check error data
-//         */
-//        // Check if required fields exist in the request body
-//        const { username, email, password } = req.body;
-//
-//        const errors = {};
-//
-//        if (!username) {
-//            errors.username = ["Username must not be blank"];
-//        } else if (username.length < 6) {
-//            errors.username = ["Username must be at least 6 characters long"];
-//        } else if (username.includes(' ')){
-//            errors.username = ["Username cannot contain spaces"];
-//        }
-//
-//        if (!email) {
-//            errors.email = ["Email must not be blank"];
-//        }
-//
-//        if (!password) {
-//            errors.password = ["Password must not be blank"];
-//        } else if (password.length < 8) {
-//            errors.password = ["Password must be at least 8 characters long"];
-//        }
-//
-//        // Check if there are any errors in the request
-//        if (Object.keys(errors).length > 0) {
-//            return res.status(400).json({ errors });
-//        }
-//        /*
-//            Check users if exists
-//         */
-//        // Check if the user already exists
-//        const q = "SELECT * FROM users WHERE username = ? OR email = ?";
-//        db.query(q, [username, email], (err, data) => {
-//        if (err) return res.status(500).json({ message: "Server Error" });
-//        if (data.length) {
-//            const existingUser = data.find(
-//                    user => user.username === username || user.email === email
-//            );
-//            if (existingUser.username === username) {
-//                return res.status(409).json({ message: "Username already exists!" });
-//            } else {
-//                return res.status(409).json({ message: "Email already exists!" });
-//            }
-//        }
-//
-//        // Check email format
-//        const emailFormat = /\S+@\S+\.\S+/;
-//        const isValidEmail = emailFormat.test(email);
-//        if (!isValidEmail) {
-//            return res.status(400).json({ message: "Invalid email format!" });
-//        }
-//
-//        // Hash the password and create a new user
-//        const salt = bcrypt.genSaltSync(10);
-//        const hashedPassword = bcrypt.hashSync(password, salt);
-//
-//        const insertQuery =
-//        "INSERT INTO users (username,email,password,name) VALUE (?)";
-//        const values = [username, email, hashedPassword, req.body.name || null];
-//
-//        db.query(insertQuery, [values], (err, data) => {
-//        if (err) return res.status(500).json({ message: "Failed to create user." });
-//        return res.status(200).json({ message: "User has been created." });
-//        });
-//        });
-//    };
+            /*
+            *   Condition handle isSuccess Login
+            */
+
+            // Check if the API call was successful
+            if (response.isSuccessful){
+                // Parse the AuthResponse from the Api response body
+                val authResponse = response.body()
+
+                // Check if the AuthResponse is not null
+                if (authResponse != null){
+                    // Extract JWT token and user detail from AuthResponse
+                    val jwtToken = authResponse.jwtToken
+                    val user = authResponse.user
+
+                    // Access user details
+                    val userId = user.id
+                    val username = user.username
+                    val email = user.email
+                    val name = user.name
+                    val coverpic = user.coverpic
+                    val profilepic = user.profilepic
+                    val city = user.city
+                    val website = user.website
+                    val created_at = user.created_at
+
+                    // NavController needed to fix
+                    navController.navigate("Home")
+                }
+
+            } else{
+
+            }
+        } catch (e: Exception){
+
+        }
+    }
 
 }
