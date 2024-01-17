@@ -48,13 +48,14 @@ import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.utils.AppConstants
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.compose.rememberNavController
+import com.example.ngebacot.LogResActivity
 import com.example.ngebacot.core.data.remote.response.RegisterResponse
+import com.example.ngebacot.navigation.Screens
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToJsonElement
 
 @Serializable
 class UserRegister() {
@@ -100,14 +101,14 @@ fun Register(
         androidx.compose.ui.text.font.Font(R.font.adlamdisplay_reguler, FontWeight.Normal)
     )
 
-    val user = remember {UserRegister()}
+    val userRegister = remember {UserRegister()}
 //    var email by remember { mutableStateOf("")}
 //    var username by remember { mutableStateOf("")}
 //    var password by remember { mutableStateOf("")}
 //    var confirmPassword by remember { mutableStateOf("")}
 
 //    validasi password
-    val passwordMismatch = user.password.isNotEmpty() && user.password != user.confirmPassword
+    val passwordMismatch = userRegister.password.isNotEmpty() && userRegister.password != userRegister.confirmPassword
     val errorText = if (passwordMismatch) "Password doesn't match" else ""
 
 //    LaunchedEffect(passwordMismatch) {
@@ -157,8 +158,8 @@ fun Register(
             )
 //            Email
             OutlinedTextField(
-                value = user.email,
-                onValueChange = { user.email = it },
+                value = userRegister.email,
+                onValueChange = { userRegister.email = it },
                 label = { Text("Email") },
                 modifier = Modifier
                     .height(75.dp)
@@ -179,8 +180,8 @@ fun Register(
             )
 //            Username
             OutlinedTextField(
-                value = user.username,
-                onValueChange = { newText -> user.username = newText },
+                value = userRegister.username,
+                onValueChange = { newText -> userRegister.username = newText },
                 label = { Text("Username") },
                 modifier = Modifier
                     .height(75.dp)
@@ -198,8 +199,8 @@ fun Register(
             )
 //          Password
             OutlinedTextField(
-                value = user.password,
-                onValueChange = { newText -> user.password = newText },
+                value = userRegister.password,
+                onValueChange = { newText -> userRegister.password = newText },
                 label = { Text("Password") },
                 modifier = Modifier
                     .height(75.dp)
@@ -239,8 +240,8 @@ fun Register(
             )
 //            Confirm Password
             OutlinedTextField(
-                value = user.confirmPassword,
-                onValueChange = { newText -> user.confirmPassword = newText },
+                value = userRegister.confirmPassword,
+                onValueChange = { newText -> userRegister.confirmPassword = newText },
                 label = { Text("Confirm Password") },
                 modifier = Modifier
                     .height(75.dp)
@@ -296,7 +297,7 @@ fun Register(
                     Button(onClick = {
                         // using coroutinScope Launch a coroutine to call the suspend function
                        coroutineScope.launch{
-                           onClickRegister(user.email, user.username, user.password)
+                           onClickRegister(userRegister.email, userRegister.username, userRegister.password)
                        }
                     },
                         modifier = Modifier
@@ -380,3 +381,7 @@ suspend fun onClickRegister(email: String, username: String, password: String) {
 
 }
 
+@Composable
+fun navigateToLogin() {
+
+}

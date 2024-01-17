@@ -1,9 +1,9 @@
 package com.example.ngebacot.views.auth
 
+//import androidx.compose.foundation.layout.FlowRowScopeInstance.align
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-//import androidx.compose.foundation.layout.FlowRowScopeInstance.align
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,11 +47,20 @@ import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.R
 import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.data.remote.response.LoginResponse
+import com.example.ngebacot.core.utils.AppConstants
+import com.example.ngebacot.navigation.Screens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import com.example.ngebacot.views.auth.Register
 import kotlinx.coroutines.launch
-import java.lang.Exception
+import kotlinx.serialization.Serializable
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
+@Serializable
+class UserLogin() {
+    var username by mutableStateOf("")
+    var password by mutableStateOf("")
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,8 +83,10 @@ fun Login(
         androidx.compose.ui.text.font.Font(R.font.adlamdisplay_reguler, FontWeight.Normal)
     )
 
-    var text by remember { mutableStateOf("")}
-    var text2 by remember { mutableStateOf("")}
+    val userLogin = remember { UserLogin() }
+    val coroutineScope = rememberCoroutineScope()
+//    var username by remember { mutableStateOf("")}
+//    var password by remember { mutableStateOf("")}
 
 //    kode untuk hide or not pw
     val focusManager = LocalFocusManager.current
@@ -113,8 +125,8 @@ fun Login(
                     .align(alignment = Alignment.CenterHorizontally)
             )
             OutlinedTextField(
-                value = text,
-                onValueChange = { text = it },
+                value = userLogin.username,
+                onValueChange = { userLogin.username = it },
                 label = { Text("Username") },
                 modifier = Modifier
                     .height(75.dp)
@@ -134,8 +146,8 @@ fun Login(
 
                 )
             OutlinedTextField(
-                value = text2,
-                onValueChange = { newText -> text2 = newText },
+                value = userLogin.password,
+                onValueChange = { newText -> userLogin.password = newText },
                 label = { Text("Password") },
                 modifier = Modifier
                     .height(75.dp)
@@ -176,7 +188,11 @@ fun Login(
             Row(modifier = Modifier
                 .align(alignment = Alignment.CenterHorizontally)) {
                 Column() {
-                    Button(onClick = { onClick(text, text2) },
+                    Button(onClick = {
+                        coroutineScope.launch{
+                            onClickLogin(userLogin.username, userLogin.password)
+                        }
+                    },
                         modifier = Modifier
                             .height(60.dp)
                             .width(270.dp)
@@ -222,14 +238,25 @@ fun Login(
 /*
 *  Handle api data login, dont forget to see http response and code thankyou
 */
-fun onClick(text: String, text2: String) {
-    val username = text
-    val password = text2
+@OptIn(ExperimentalMaterial3Api::class)
+suspend fun onClickLogin(username: String, password: String) {
+//    val usernameValue = username
+//    val passwordValue = password
+
+    val baseUrl = AppConstants.BASE_URL
 
     val loginRequest = LoginResponse(username, password)
-    val apiService = ApiService.create()
+    //val apiService = ApiService.create()
+    val retrofit = Retrofit.Builder()
+        .baseUrl(baseUrl)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
 
-    CoroutineScope(Dispatchers.IO).launch{
+    val apiService = retrofit.create(ApiService::class.java)
+
+    val scope = CoroutineScope(Dispatchers.IO)
+
+    scope.launch {
         try {
             val response = apiService.login(loginRequest)
 
@@ -238,12 +265,12 @@ fun onClick(text: String, text2: String) {
             */
 
             // Check if the API call was successful
-            if (response.isSuccessful){
+            if (response.isSuccessful) {
                 // Parse the AuthResponse from the Api response body
                 val authResponse = response.body()
 
                 // Check if the AuthResponse is not null
-                if (authResponse != null){
+                if (authResponse != null) {
                     // Extract JWT token and user detail from AuthResponse
                     val jwtToken = authResponse.jwtToken
                     val user = authResponse.user
@@ -260,15 +287,17 @@ fun onClick(text: String, text2: String) {
                     val created_at = user.created_at
 
                     // NavController needed to fix
-                    navController.navigate("Home")
+                    //navController.navigate(Screens.HomePage.name)
+                    Screens.HomePage
                 }
 
-            } else{
+            } else {
 
             }
-        } catch (e: Exception){
+        } catch (e: Exception) {
 
         }
     }
+
 
 }
