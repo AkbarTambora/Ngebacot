@@ -40,7 +40,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ngebacot.views.auth.onClick
 import com.example.ngebacot.ui.theme.NgebacotTheme
 import com.example.ngebacot.ui.theme.btnColorLogin
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)

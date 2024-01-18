@@ -47,14 +47,13 @@ import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.R
 import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.data.remote.response.LoginResponse
+import com.example.ngebacot.core.domain.model.UserModel
 import com.example.ngebacot.core.utils.AppConstants
 import com.example.ngebacot.navigation.Screens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 @Serializable
 class UserLogin() {
@@ -243,16 +242,14 @@ suspend fun onClickLogin(username: String, password: String) {
 //    val usernameValue = username
 //    val passwordValue = password
 
-    val baseUrl = AppConstants.BASE_URL
-
     val loginRequest = LoginResponse(username, password)
-    //val apiService = ApiService.create()
-    val retrofit = Retrofit.Builder()
+    val apiService = ApiService.create()
+    /*val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    val apiService = retrofit.create(ApiService::class.java)
+    val apiService = retrofit.create(ApiService::class.java)*/
 
     val scope = CoroutineScope(Dispatchers.IO)
 
@@ -285,7 +282,7 @@ suspend fun onClickLogin(username: String, password: String) {
                     val city = user.city
                     val website = user.website
                     val created_at = user.created_at
-
+                    UserModel(userId, username,email,name,coverpic,profilepic,city,website,created_at)
                     // NavController needed to fix
                     //navController.navigate(Screens.HomePage.name)
                     Screens.HomePage
