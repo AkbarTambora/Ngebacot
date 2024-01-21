@@ -52,6 +52,7 @@ export const getPosts = (req, res) => {
                     }
                 };
             });
+            console.log("Formatted Data:", formattedData);
             return res.status(200).json({ data: formattedData });
         });
     });
