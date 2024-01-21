@@ -15,15 +15,34 @@ export const getPosts = (req, res) => {
     jwt.verify(token, "secretkey", (err, userInfo) => {
         if (err) return res.status(403).json("Token is not valid!");
 
-        console.log("userId:", userId);
+        let q;
+        let values;
 
-        const q = userId !== "undefined"
-            ? `SELECT p.*, u.id AS userId, u.email, u.username, u.name, u.profilepic FROM posts AS p JOIN users AS u ON (u.id = p.userId) WHERE p.userId = ? ORDER BY p.created_at DESC`
-            : `SELECT p.*, u.id AS userId, u.email, u.username, u.name, u.profilepic FROM posts AS p JOIN users AS u ON (u.id = p.userId)
-                LEFT JOIN relationships AS r ON (p.userId = r.followedUserId) WHERE r.followerUserId= ? OR p.userId =?
+        if (userId) {
+            // Jika userId diberikan, ambil postingan sesuai dengan userId
+            q = `SELECT p.*, u.id AS userId, u.email, u.username, u.name, u.profilepic 
+                    FROM posts AS p 
+                    JOIN users AS u ON (u.id = p.userId)
+                    LEFT JOIN relationships AS r ON (p.userId = r.followedUserId AND r.followerUserId = ?)
+                    WHERE (r.followerUserId = ? AND r.followedUserId IS NOT NULL) OR p.userId = ?
+                    ORDER BY p.created_at DESC`;
+            values = [userInfo.id, userId, userId];
+        } else {
+            // Jika userId tidak diberikan, ambil semua postingan dari semua pengguna
+            /* q = `SELECT p.*, u.id AS userId, u.email, u.username, u.name, u.profilepic 
+                    FROM posts AS p 
+                    JOIN users AS u ON (u.id = p.userId)
+                    LEFT JOIN relationships AS r ON (p.userId = r.followedUserId AND r.followerUserId = ?)
+                    WHERE (r.followerUserId = ? AND r.followedUserId IS NOT NULL) OR p.userId = ?
+                    ORDER BY p.created_at DESC`;
+            values = [userInfo.id, userInfo.id, null]; */ // userId parameter is set to null for this case
+            q = `SELECT p.*, u.id AS userId, u.email, u.username, u.name, u.profilepic 
+                FROM posts AS p 
+                JOIN users AS u ON (u.id = p.userId)
                 ORDER BY p.created_at DESC`;
 
-        const values = userId !== "undefined" ? [userId] : [userInfo.id, userInfo.id];
+            values = [];
+        }
 
         db.query(q, values, (err, data) => {
             if (err) {
@@ -55,6 +74,8 @@ export const getPosts = (req, res) => {
         });
     });
 };
+
+
 
 
 

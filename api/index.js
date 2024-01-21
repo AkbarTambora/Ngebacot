@@ -48,39 +48,6 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/likes", likeRoutes);
 app.use("/api/relationships", relationshipRoutes);
 
-// Penanganan "Cannot GET" untuk rute yang tidak didefinisikan
-app.get("/",(req,res)=>{
-    res.send(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title></title>
-            <style>
-                body {
-                    background-color: black;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    height: 100vh;
-                    margin: 0;
-                    color:white;
-                }
-                img {
-                    max-width: 80%;
-                    max-height: 80%;
-                    border: 2px solid white;
-                    border-radius: 5px;
-                    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-                }
-            </style>
-        </head>
-        <body>
-            <h1>...</h1>
-        </body>
-        </html>
-    `);
-});
-
 // penanganan 404
 app.use((req, res, next) => {
     res.status(404).send("404 - Not Found");

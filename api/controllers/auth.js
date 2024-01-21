@@ -110,9 +110,13 @@ export const login = (req, res) => {
 
 //End Point Logout
 export const logout = (req, res) => {
+    // Clear the Authorization header to remove the bearer token
+    res.setHeader('Authorization', ' ');
+
     res.clearCookie("accessToken", {
         secure: true,
-        sameSite: "none"
+        sameSite: "none",
+        httpOnly: true
     }).status(200).header("Authorization", "").json("User has been logged out.")
 
 }
