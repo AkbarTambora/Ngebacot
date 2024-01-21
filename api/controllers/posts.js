@@ -17,15 +17,13 @@ export const getPosts = (req, res) => {
 
         console.log("userId:", userId);
 
-        const q =
-            userId !== "undefined"
-                ? `SELECT p.*, u.id AS userId, u.email, u.username, u.name, u.profilepic FROM posts AS p JOIN users AS u ON (u.id = p.userId) WHERE p.userId = ? ORDER BY p.created_at DESC`
-                : `SELECT p.*, u.id AS userId, u.email, u.username, u.name, u.profilepic FROM posts AS p JOIN users AS u ON (u.id = p.userId)
-    LEFT JOIN relationships AS r ON (p.userId = r.followedUserId) WHERE r.followerUserId= ? OR p.userId =?
-    ORDER BY p.created_at DESC`;
+        const q = userId !== "undefined"
+            ? `SELECT p.*, u.id AS userId, u.email, u.username, u.name, u.profilepic FROM posts AS p JOIN users AS u ON (u.id = p.userId) WHERE p.userId = ? ORDER BY p.created_at DESC`
+            : `SELECT p.*, u.id AS userId, u.email, u.username, u.name, u.profilepic FROM posts AS p JOIN users AS u ON (u.id = p.userId)
+                LEFT JOIN relationships AS r ON (p.userId = r.followedUserId) WHERE r.followerUserId= ? OR p.userId =?
+                ORDER BY p.created_at DESC`;
 
-        const values =
-            userId !== "undefined" ? [userId] : [userInfo.id, userInfo.id];
+        const values = userId !== "undefined" ? [userId] : [userInfo.id, userInfo.id];
 
         db.query(q, values, (err, data) => {
             if (err) {
@@ -53,12 +51,11 @@ export const getPosts = (req, res) => {
                 };
             });
 
-            console.log("Formatted Data:", formattedData);
-
             return res.status(200).json({ data: formattedData });
         });
     });
 };
+
 
 
 export const addPost = (req, res) => {
