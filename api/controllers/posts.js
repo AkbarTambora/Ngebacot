@@ -19,8 +19,8 @@ export const getPosts = (req, res) => {
 
         const q =
             userId !== "undefined"
-                ? `SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId) WHERE p.userId = ? ORDER BY p.created_at DESC`
-                : `SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId)
+                ? `SELECT p.*, u.id AS userId, u.email, u.username, u.name, u.profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId) WHERE p.userId = ? ORDER BY p.created_at DESC`
+                : `SELECT p.*, u.id AS userId, u.email, u.username, u.name, u.profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId)
     LEFT JOIN relationships AS r ON (p.userId = r.followedUserId) WHERE r.followerUserId= ? OR p.userId =?
     ORDER BY p.created_at DESC`;
 
@@ -35,10 +35,29 @@ export const getPosts = (req, res) => {
 
             console.log("Query Result:", data);
 
-            return res.status(200).json(data);
+            // Transform the data to the desired format
+            const formattedData = data.map(post => {
+                return {
+                    id: post.id,
+                    caption: post.caption,
+                    img: post.img,
+                    userId: post.userId,
+                    created_at: post.created_at,
+                    user: {
+                        id: post.userId,
+                        email: post.email,
+                        username: post.username,
+                        name: post.name,
+                        profilepic: post.profilePic
+                    }
+                };
+            });
+
+            return res.status(200).json({ data: formattedData });
         });
     });
 };
+
 
 
 export const addPost = (req, res) => {
