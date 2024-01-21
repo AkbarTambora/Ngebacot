@@ -40,12 +40,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ngebacot.core.data.remote.client.ApiService
+import com.example.ngebacot.core.domain.model.PostViewModel
 import com.example.ngebacot.views.auth.onClick
 import com.example.ngebacot.ui.theme.NgebacotTheme
 import com.example.ngebacot.ui.theme.btnColorLogin
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun iconTwitter() {
+fun iconTwitter(apiService: ApiService, viewModel: PostViewModel) {
     var text by remember { mutableStateOf("") }
     var isEditing by remember { mutableStateOf(false) }
 
@@ -54,7 +56,9 @@ fun iconTwitter() {
 
 //    untuk limit karakter yg diketik user (sama kaya twitter max 280 karakter)
     val maxLength = 280
-
+// Mendapatkan token (pastikan Anda telah mengimplementasikan logika autentikasi)
+//    disini cari cara untuk ambil token
+    val token = "your_token_here"
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -104,7 +108,8 @@ fun iconTwitter() {
             )
             Button(
                 onClick = {
-                    onClick(text) // Make sure to call the correct function and pass the required parameters
+//                    cari cara untuk mengambil function createPost, karena tidak terbaca. Functionnya ada di PostViewModel
+                    PostViewModel.createPost(token, postText) // Gantilah dengan cara memanggil metode createPost yang sesuai
                 },
                 modifier = Modifier
                     .height(65.dp)
