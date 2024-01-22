@@ -70,6 +70,7 @@ dependencies {
 //    add font from google
     implementation("androidx.compose.ui:ui-text-google-fonts:1.5.4")
     implementation("androidx.navigation:navigation-compose:2.7.6")
+    implementation("androidx.databinding:compiler:3.2.0-alpha11")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -109,6 +110,7 @@ dependencies {
     // Serialization for text to json format
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
     implementation("org.jetbrains.kotlin:kotlin-serialization-compiler-plugin-embeddable:1.9.22")
 
 
