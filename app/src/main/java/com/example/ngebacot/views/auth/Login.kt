@@ -47,8 +47,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.R
 import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.data.remote.response.LoginResponse
+import com.example.ngebacot.core.domain.model.AuthModel
 import com.example.ngebacot.core.domain.model.UserModel
-import com.example.ngebacot.core.utils.AppConstants
 import com.example.ngebacot.navigation.Screens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -239,17 +239,8 @@ fun Login(
 */
 @OptIn(ExperimentalMaterial3Api::class)
 suspend fun onClickLogin(username: String, password: String) {
-//    val usernameValue = username
-//    val passwordValue = password
-
     val loginRequest = LoginResponse(username, password)
     val apiService = ApiService.create()
-    /*val retrofit = Retrofit.Builder()
-        .baseUrl(baseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val apiService = retrofit.create(ApiService::class.java)*/
 
     val scope = CoroutineScope(Dispatchers.IO)
 
@@ -272,7 +263,10 @@ suspend fun onClickLogin(username: String, password: String) {
                     val jwtToken = authResponse.jwtToken
                     val user = authResponse.user
 
-                    // Access user details
+                    // Simpan token JWT ke model autentikasi (jika diperlukan)
+
+
+                    // Access user detailsbhjkf tyi rf,tjftmhjfmkf
                     val userId = user.id
                     val username = user.username
                     val email = user.email
@@ -289,9 +283,27 @@ suspend fun onClickLogin(username: String, password: String) {
                 }
 
             } else {
+                // Tangani status code yang tidak berhasil
+                when (response.code()){
+                    401 -> {
+
+                    }
+                    403 -> {
+
+                    }
+                    500 ->{
+
+                    }
+                    else -> {
+
+                    }
+                }
 
             }
         } catch (e: Exception) {
+            // Tangani kesalahan jaringan atau kesalahan lainnya
+            // Tampilkan pesan kesalahan sesuai dengan kebutuhan
+            e.printStackTrace()
 
         }
     }
