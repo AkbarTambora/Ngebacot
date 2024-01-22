@@ -3,13 +3,19 @@ package com.example.ngebacot.core.data.remote.client
 import com.example.ngebacot.core.data.remote.response.AuthResponse
 import com.example.ngebacot.core.data.remote.response.LoginResponse
 import com.example.ngebacot.core.data.remote.response.RegisterResponse
+<<<<<<< HEAD
 import com.example.ngebacot.core.utils.AppConstants
+=======
+import com.example.ngebacot.core.domain.model.PostModel
+import okhttp3.Request
+>>>>>>> 31d483ea875acc4cd27e72ab465511369c63d92f
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface ApiService {
@@ -29,6 +35,7 @@ interface ApiService {
     @POST("api/auth/logout")
     suspend fun logout(): ResponseBody
 
+<<<<<<< HEAD
     companion object{
         /*
         * Add a function to create the ApiService instance
@@ -42,4 +49,13 @@ interface ApiService {
             return retrofit.create(ApiService::class.java)
         }
     }
+=======
+    @POST("/api/posts")
+    suspend fun createPost(
+        @Header("Authorization") token: String,
+        @Body postRequest: PostModel
+    ): Response<PostModel>
+
+    companion object
+>>>>>>> 31d483ea875acc4cd27e72ab465511369c63d92f
 }
