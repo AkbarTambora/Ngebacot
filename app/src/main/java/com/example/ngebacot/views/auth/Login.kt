@@ -45,8 +45,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.R
+import com.example.ngebacot.core.data.remote.client.ApiClient
 import com.example.ngebacot.core.data.remote.client.ApiService
-import com.example.ngebacot.core.data.remote.response.LoginResponse
+import com.example.ngebacot.core.data.remote.request.LoginRequest
 import com.example.ngebacot.core.domain.model.AuthModel
 import com.example.ngebacot.core.domain.model.UserModel
 import com.example.ngebacot.navigation.Screens
@@ -239,8 +240,8 @@ fun Login(
 */
 @OptIn(ExperimentalMaterial3Api::class)
 suspend fun onClickLogin(username: String, password: String) {
-    val loginRequest = LoginResponse(username, password)
-    val apiService = ApiService.create()
+    val loginRequest = LoginRequest(username, password)
+    val apiService = ApiClient.apiService
 
     val scope = CoroutineScope(Dispatchers.IO)
 
@@ -264,7 +265,7 @@ suspend fun onClickLogin(username: String, password: String) {
                     val user = authResponse.user
 
                     // Simpan token JWT ke model autentikasi (jika diperlukan)
-
+                    val authModel = AuthModel(jwtToken, user)
 
                     // Access user detailsbhjkf tyi rf,tjftmhjfmkf
                     val userId = user.id

@@ -1,10 +1,8 @@
-package com.example.ngebacot.core.data.remote.response
+package com.example.ngebacot.core.data.remote.request
 
 import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 
-@Serializable
-data class LoginResponse (
+data class AuthRequest (
     @SerialName("username")
     val username: String,
     @SerialName("password")
