@@ -13,21 +13,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,21 +42,15 @@ import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.R
 import com.example.ngebacot.core.data.remote.client.ApiService
+import com.example.ngebacot.core.data.remote.request.RegisterRequest
 import com.example.ngebacot.core.utils.AppConstants
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.navigation.compose.rememberNavController
-import com.example.ngebacot.LogResActivity
-import com.example.ngebacot.core.data.remote.response.RegisterResponse
-import com.example.ngebacot.navigation.Screens
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 @Serializable
 class UserRegister() {
@@ -349,7 +344,8 @@ suspend fun onClickRegister(email: String, username: String, password: String) {
     // Pastikan bahwa password dan konfirmasi password sesuai
     //val registData = RegisterResponse(email, username, password)
     val registData = UserRegister()
-    val registerData = Json.encodeToString(registData)
+    val registerRequest = RegisterRequest(username, password, email)
+//    val registerData = Json.encodeToString(registData)
     //val registerData = Json.encodeToJsonElement(registeData)
 
     val retrofit = Retrofit.Builder()
@@ -360,7 +356,7 @@ suspend fun onClickRegister(email: String, username: String, password: String) {
     val apiService = retrofit.create(ApiService::class.java)
 
     try {
-        val response = apiService.register(registerData)
+        val response = apiService.register(registerRequest)
 
         if (response.isSuccessful){
             // Register berhasil
