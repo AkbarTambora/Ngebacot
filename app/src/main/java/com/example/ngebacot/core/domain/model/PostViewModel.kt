@@ -1,3 +1,4 @@
+/*
 package com.example.ngebacot.core.domain.model
 
 import androidx.lifecycle.ViewModel
@@ -21,3 +22,4 @@ class PostViewModel(private val apiService: ApiService) : ViewModel() {
         }
     }
 }
+*/

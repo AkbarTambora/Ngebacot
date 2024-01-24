@@ -1,5 +1,4 @@
-/*
-package com.example.ngebacot.testingjangandipake
+package com.example.ngebacot.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -41,14 +40,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ngebacot.core.data.remote.client.ApiService
-import com.example.ngebacot.core.domain.model.PostViewModel
-import com.example.ngebacot.views.auth.onClick
 import com.example.ngebacot.ui.theme.NgebacotTheme
 import com.example.ngebacot.ui.theme.btnColorLogin
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun iconTwitter(apiService: ApiService, viewModel: PostViewModel) {
+fun iconTwitters() {
     var text by remember { mutableStateOf("") }
     var isEditing by remember { mutableStateOf(false) }
 
@@ -110,7 +106,7 @@ fun iconTwitter(apiService: ApiService, viewModel: PostViewModel) {
             Button(
                 onClick = {
 //                    cari cara untuk mengambil function createPost, karena tidak terbaca. Functionnya ada di PostViewModel
-                    PostViewModel.createPost(token, postText) // Gantilah dengan cara memanggil metode createPost yang sesuai
+                    /*PostViewModel.createPost(token, postText) */// Gantilah dengan cara memanggil metode createPost yang sesuai
                 },
                 modifier = Modifier
                     .height(65.dp)
@@ -178,8 +174,7 @@ fun onClick(text: String) {
 @Composable
 fun ComposableWithPencilIconPreview() {
     NgebacotTheme {
-        iconTwitter()
+        iconTwitters()
     }
 }
 
-*/

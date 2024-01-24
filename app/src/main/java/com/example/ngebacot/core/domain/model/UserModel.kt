@@ -1,7 +1,12 @@
 package com.example.ngebacot.core.domain.model
 
+import com.example.ngebacot.core.utils.DateUtils
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
 
+@Serializable
 data class UserModel (
     val id: Int,
     val email: String,
@@ -11,5 +16,11 @@ data class UserModel (
     val profilepic: String?,
     val city: String?,
     val website: String?,
-    val created_at: LocalDateTime
-)
+    @SerialName("createdAt")
+    @Contextual
+    val created_at: String,
+){
+    // Mengonversi string tanggal dan waktu ke LocalDateTime menggunakan DateUtil
+    val createdAts: LocalDateTime
+        get() = DateUtils().localDateTime(created_at)
+}

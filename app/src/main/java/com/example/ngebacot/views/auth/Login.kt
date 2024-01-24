@@ -1,6 +1,7 @@
 package com.example.ngebacot.views.auth
 
 //import androidx.compose.foundation.layout.FlowRowScopeInstance.align
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontFamily
@@ -45,9 +47,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.R
+import com.example.ngebacot.core.data.local.auth.AuthLocalDatastore
+import com.example.ngebacot.core.data.remote.client.ApiClient
 import com.example.ngebacot.core.data.remote.client.ApiService
-import com.example.ngebacot.core.data.remote.response.LoginResponse
-import com.example.ngebacot.core.domain.model.AuthModel
+import com.example.ngebacot.core.data.remote.request.LoginRequest
 import com.example.ngebacot.core.domain.model.UserModel
 import com.example.ngebacot.navigation.Screens
 import kotlinx.coroutines.CoroutineScope
@@ -62,11 +65,20 @@ class UserLogin() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+sealed class LoginResult {
+    data class Success(val userModel: UserModel) : LoginResult()
+    data class Error(val errorMessage: String) : LoginResult()
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
+
 fun Login(
     hasError: Boolean = false,
-    navController: NavHostController = rememberNavController()
+    context: Context = LocalContext.current,
+    navController: NavHostController = rememberNavController(),
 ) {
+    val apiClient = remember { ApiClient(context = context) }
     val biruBaseCard = Color(0xFF7C92F5)
     val btnColorLogin = Color(0xFFFF6978)
     val outlineInputColor = Color(0xFFFFFFFF)
@@ -187,21 +199,8 @@ fun Login(
             Row(modifier = Modifier
                 .align(alignment = Alignment.CenterHorizontally)) {
                 Column() {
-                    Button(onClick = {
-                        coroutineScope.launch{
-                            onClickLogin(userLogin.username, userLogin.password)
-                        }
-                    },
-                        modifier = Modifier
-                            .height(60.dp)
-                            .width(270.dp)
-                            .padding(top = 15.dp)
-                        ,
-                        shape = RoundedCornerShape(50.dp),
-                        colors = ButtonDefaults.buttonColors(btnColorLogin)
-                    ) {
-                        Text("Login", fontSize = 20.sp, fontFamily = poppins, fontWeight = FontWeight.Medium)
-                    }
+                    // Menggunakan instance apiClient untuk mengakses apiService
+                    LoginButton(apiClient.apiService,userLogin, coroutineScope, context)
                     Row {
                         Text(
                             fontSize = 16.sp,
@@ -233,14 +232,42 @@ fun Login(
 
 }
 
+@Composable
+fun LoginButton(apiService: ApiService,userLogin: UserLogin, coroutineScope: CoroutineScope, context: Context){
+    val btnColorLogin = Color(0xFFFF6978)
+//    custom font
+    val poppins = FontFamily (
+        androidx.compose.ui.text.font.Font(R.font.poppins_reguler, FontWeight.Normal),
+        androidx.compose.ui.text.font.Font(R.font.poppins_medium, FontWeight.Medium),
+        androidx.compose.ui.text.font.Font(R.font.poppins_semibold, FontWeight.SemiBold),
+        androidx.compose.ui.text.font.Font(R.font.poppins_bold, FontWeight.Bold)
+    )
+
+    Button(
+        onClick = {
+            coroutineScope.launch {
+                onClickLogin(apiService,userLogin.username, userLogin.password,context)
+            }
+        },
+        modifier = Modifier
+            .height(60.dp)
+            .width(270.dp)
+            .padding(top = 15.dp)
+        ,
+        shape = RoundedCornerShape(50.dp),
+        colors = ButtonDefaults.buttonColors(btnColorLogin)
+    ) {
+        Text("Login", fontSize = 20.sp, fontFamily = poppins, fontWeight = FontWeight.Medium)
+    }
+}
 
 /*
 *  Handle api data login, dont forget to see http response and code thankyou
 */
 @OptIn(ExperimentalMaterial3Api::class)
-suspend fun onClickLogin(username: String, password: String) {
-    val loginRequest = LoginResponse(username, password)
-    val apiService = ApiService.create()
+suspend fun onClickLogin(apiService: ApiService, username: String, password: String, context: Context) {
+    val loginRequest = LoginRequest(username, password)
+
 
     val scope = CoroutineScope(Dispatchers.IO)
 
@@ -248,65 +275,39 @@ suspend fun onClickLogin(username: String, password: String) {
         try {
             val response = apiService.login(loginRequest)
 
-            /*
-            *   Condition handle isSuccess Login
-            */
-
-            // Check if the API call was successful
             if (response.isSuccessful) {
-                // Parse the AuthResponse from the Api response body
                 val authResponse = response.body()
 
-                // Check if the AuthResponse is not null
                 if (authResponse != null) {
-                    // Extract JWT token and user detail from AuthResponse
                     val jwtToken = authResponse.jwtToken
                     val user = authResponse.user
 
-                    // Simpan token JWT ke model autentikasi (jika diperlukan)
-
-
-                    // Access user detailsbhjkf tyi rf,tjftmhjfmkf
-                    val userId = user.id
-                    val username = user.username
-                    val email = user.email
-                    val name = user.name
-                    val coverpic = user.coverpic
-                    val profilepic = user.profilepic
-                    val city = user.city
-                    val website = user.website
-                    val created_at = user.created_at
-                    UserModel(userId, username,email,name,coverpic,profilepic,city,website,created_at)
-                    // NavController needed to fix
-                    //navController.navigate(Screens.HomePage.name)
-                    Screens.HomePage
+                    if (jwtToken != null && user != null) {
+                        AuthLocalDatastore.saveToken(context, jwtToken)
+                        UserModel(user.id, user.username, user.email, user.name, user.coverpic, user.profilepic, user.city, user.website, user.created_at)
+                            .also {
+                                // Navigate to Home page after successful login
+                                Screens.HomePage
+                            }
+                            .let { LoginResult.Success(it) }
+                    } else {
+                        LoginResult.Error("Unexpected response body")
+                    }
+                } else {
+                    LoginResult.Error("Unexpected response body")
                 }
 
             } else {
-                // Tangani status code yang tidak berhasil
-                when (response.code()){
-                    401 -> {
-
-                    }
-                    403 -> {
-
-                    }
-                    500 ->{
-
-                    }
-                    else -> {
-
-                    }
+                when (response.code()) {
+                    401 -> LoginResult.Error("Unauthorized")
+                    403 -> LoginResult.Error("Forbidden")
+                    500 -> LoginResult.Error("Server Error")
+                    else -> LoginResult.Error("Other status code: ${response.code()}")
                 }
-
             }
         } catch (e: Exception) {
-            // Tangani kesalahan jaringan atau kesalahan lainnya
-            // Tampilkan pesan kesalahan sesuai dengan kebutuhan
+            LoginResult.Error("Network error or other exception: ${e.message}")
             e.printStackTrace()
-
         }
     }
-
-
 }
