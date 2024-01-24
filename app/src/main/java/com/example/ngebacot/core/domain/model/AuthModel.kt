@@ -1,5 +1,4 @@
 package com.example.ngebacot.core.domain.model
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
