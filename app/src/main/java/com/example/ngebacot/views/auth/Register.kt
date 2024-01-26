@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package com.example.ngebacot.views.auth
 
 import androidx.compose.foundation.clickable
@@ -30,9 +32,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -47,10 +51,13 @@ import com.example.ngebacot.R
 import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.data.remote.request.RegisterRequest
 import com.example.ngebacot.core.utils.AppConstants
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+
 
 @Serializable
 class UserRegister() {
@@ -58,6 +65,11 @@ class UserRegister() {
     var username by mutableStateOf("")
     var password by mutableStateOf("")
     var confirmPassword by mutableStateOf("")
+}
+
+class ErrorMessage() {
+    var emailErrorText by mutableStateOf("")// Pesan kesalahan untuk inputan email
+    var usernameErrorText by mutableStateOf("")// Pesan kesalahan untuk inputan username
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -102,9 +114,10 @@ fun Register(
 //    var password by remember { mutableStateOf("")}
 //    var confirmPassword by remember { mutableStateOf("")}
 
-//    validasi password
+//    validasi password, email,username
     val passwordMismatch = userRegister.password.isNotEmpty() && userRegister.password != userRegister.confirmPassword
     val errorText = if (passwordMismatch) "Password doesn't match" else ""
+    val errorMessage = remember {ErrorMessage()}
 
 //    LaunchedEffect(passwordMismatch) {
 //        if (passwordMismatch) {
@@ -119,6 +132,8 @@ fun Register(
     * context of a @composable function
     */
     val coroutineScope = rememberCoroutineScope()
+
+    val keyboardController = LocalSoftwareKeyboardController.current
     Box (
         modifier = Modifier
             .fillMaxSize(),
@@ -154,13 +169,17 @@ fun Register(
 //            Email
             OutlinedTextField(
                 value = userRegister.email,
-                onValueChange = { userRegister.email = it },
+                onValueChange = { email ->
+                    userRegister.email = email
+                    errorMessage.emailErrorText = ""
+                },
                 label = { Text("Email") },
                 modifier = Modifier
                     .height(75.dp)
                     .width(270.dp)
                     .align(alignment = Alignment.CenterHorizontally)
                     .padding(bottom = 15.dp)
+                    .clickable { focusManager.clearFocus() }
                 ,
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -170,19 +189,31 @@ fun Register(
 
                 ),
                 shape = RoundedCornerShape(50.dp),
-
-
             )
+            // Tampilkan pesan kesalahan email di bawah inputan email
+            if (errorMessage.emailErrorText.isNotEmpty()) {
+                Text(
+                    text = errorMessage.emailErrorText,
+                    color = Color.Red,
+                    fontSize = 12.sp, // Ukuran font yang lebih kecil
+                    modifier = Modifier
+                        .padding(start = 16.dp, top = 4.dp, bottom = 4.dp) // Geser ke kiri dan tambahkan margin bawah
+                )
+            }
 //            Username
             OutlinedTextField(
                 value = userRegister.username,
-                onValueChange = { newText -> userRegister.username = newText },
+                onValueChange = { newText ->
+                    userRegister.username = newText
+                    errorMessage.usernameErrorText = ""
+                },
                 label = { Text("Username") },
                 modifier = Modifier
                     .height(75.dp)
                     .width(270.dp)
                     .align(alignment = Alignment.CenterHorizontally)
                     .padding(bottom = 15.dp)
+                    .clickable { focusManager.clearFocus() }
                 ,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = outlineInputColor, // Warna outline saat input fokus
@@ -191,7 +222,18 @@ fun Register(
 
                 ),
                 shape = RoundedCornerShape(50.dp),
+
             )
+            // Tampilkan pesan kesalahan username di bawah inputan username
+            if (errorMessage.usernameErrorText.isNotEmpty()) {
+                Text(
+                    text = errorMessage.usernameErrorText,
+                    color = Color.Red,
+                    fontSize = 12.sp, // Ukuran font yang lebih kecil
+                    modifier = Modifier
+                        .padding(start = 16.dp, top = 4.dp, bottom = 4.dp) // Geser ke kiri dan tambahkan margin bawah
+                )
+            }
 //          Password
             OutlinedTextField(
                 value = userRegister.password,
@@ -202,6 +244,7 @@ fun Register(
                     .width(270.dp)
                     .align(alignment = Alignment.CenterHorizontally)
                     .padding(bottom = 15.dp)
+                    .clickable { focusManager.clearFocus() }
                 ,
                 singleLine = true,
 //                isError = hasError || matchError.value,
@@ -243,6 +286,7 @@ fun Register(
                     .width(270.dp)
                     .align(alignment = Alignment.CenterHorizontally)
                     .padding(bottom = 15.dp)
+                    .clickable { focusManager.clearFocus() }
                 ,
                 isError = passwordMismatch
                 ,
@@ -279,9 +323,9 @@ fun Register(
                 Text(
                     text = errorText,
                     color = Color.Red,
-                    fontSize = 14.sp,
+                    fontSize = 12.sp, // Ukuran font yang lebih kecil
                     modifier = Modifier
-                        .padding( start = 90.dp)
+                        .padding(start = 16.dp, top = 4.dp, bottom = 4.dp) // Geser ke kiri dan tambahkan margin bawah
                 )
             }
             Row(modifier = Modifier
@@ -289,12 +333,19 @@ fun Register(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Button(onClick = {
-                        // using coroutinScope Launch a coroutine to call the suspend function
-                       coroutineScope.launch{
-                           onClickRegister(userRegister.email, userRegister.username, userRegister.password)
-                       }
-                    },
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                onClickRegister(
+                                    userRegister.email,
+                                    userRegister.username,
+                                    userRegister.password,
+                                    errorMessage
+                                )
+                            }
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
+                        },
                         modifier = Modifier
                             .height(60.dp)
                             .width(270.dp)
@@ -304,7 +355,11 @@ fun Register(
                         shape = RoundedCornerShape(50.dp),
                         colors = ButtonDefaults.buttonColors(btnColorLogin)
                     ) {
-                        Text("Register", fontSize = 20.sp, fontFamily = poppins, fontWeight = FontWeight.Medium)
+                        Text("Register",
+                            fontSize = 20.sp,
+                            fontFamily = poppins,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
                     Row {
                         Text(
@@ -338,15 +393,21 @@ fun Register(
 }
 
 
-suspend fun onClickRegister(email: String, username: String, password: String) {
+
+suspend fun onClickRegister(email: String, username: String, password: String, errorMessage: ErrorMessage) {
     val baseUrl = AppConstants.BASE_URL
 
+
+    val emailRegex = Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")
+    if (!email.matches(emailRegex)) {
+        // Set pesan kesalahan untuk email invalid format
+        errorMessage.emailErrorText  = "Invalid email format"
+        println("Invalid email format")
+        return
+    }
+
     // Pastikan bahwa password dan konfirmasi password sesuai
-    //val registData = RegisterResponse(email, username, password)
-    val registData = UserRegister()
-    val registerRequest = RegisterRequest(username, password, email)
-//    val registerData = Json.encodeToString(registData)
-    //val registerData = Json.encodeToJsonElement(registeData)
+    val registerRequest = RegisterRequest(email, username, password)
 
     val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
@@ -356,26 +417,27 @@ suspend fun onClickRegister(email: String, username: String, password: String) {
     val apiService = retrofit.create(ApiService::class.java)
 
     try {
-        val response = apiService.register(registerRequest)
+        val response = withContext(Dispatchers.IO) {
+            apiService.register(registerRequest)
+        }
 
-        if (response.isSuccessful){
+        if (response.isSuccessful) {
             // Register berhasil
             val authResponse = response.body()
             println("Registration successful. Auth token: ${authResponse?.jwtToken}")
-        }else{
+        } else {
             // Error occurred during registration
             println("Registration failed. Status code: ${response.code()}")
             println("Response body: ${response.errorBody()?.string()}")
+
+            // Handle status code lainnya jika diperlukan
         }
-    }catch (e: Exception){
+    } catch (e: Exception) {
         // Tangani kesalahan koneksi atau kesalahan lainnya
         println("Error: ${e.message}")
     }
-
-    // buat class udah, sekarang class nya gimana biar bisa di kirim dalam bentuk json
-    // pake serialization
-
 }
+
 
 @Composable
 fun navigateToLogin() {
