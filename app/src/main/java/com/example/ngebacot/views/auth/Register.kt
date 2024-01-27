@@ -2,7 +2,6 @@
 
 package com.example.ngebacot.views.auth
 
-import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,16 +45,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.R
-import com.example.ngebacot.core.data.local.auth.AuthLocalDatastore
 import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.data.remote.request.RegisterRequest
-import com.example.ngebacot.core.domain.model.UserModel
 import com.example.ngebacot.core.utils.AppConstants
-import com.example.ngebacot.navigation.Screens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -493,13 +488,18 @@ fun passwordRegex(password: String, errorMessage: ErrorMessage): String {
 //    }
 //}
 
+@OptIn(ExperimentalMaterial3Api::class)
+sealed class RegisterResult {
+    data class Error(val errorMessage: String) : RegisterResult()
+}
+
 suspend fun onClickRegister(email: String, username: String, password: String, errorMessage: ErrorMessage) {
 
     val baseUrl = AppConstants.BASE_URL
 
-    val emailCheck = emailRegex(email, errorMessage)
-    val usernameCheck = usernameRegex(email, errorMessage)
-    val passwordCheck = passwordRegex(password, errorMessage)
+//    val emailCheck = emailRegex(email, errorMessage)
+//    val usernameCheck = usernameRegex(username, errorMessage)
+//    val passwordCheck = passwordRegex(password, errorMessage)
 
     val registerRequest = RegisterRequest(email, username, password)
 
@@ -513,34 +513,44 @@ suspend fun onClickRegister(email: String, username: String, password: String, e
 
     val scope = CoroutineScope(Dispatchers.IO)
 
-    scope.launch() {
+    scope.launch {
         try {
             val response = withContext(Dispatchers.IO) {
                 apiService.register(registerRequest)
             }
 
+            emailRegex(email, errorMessage)
+            usernameRegex(username, errorMessage)
+            passwordRegex(password, errorMessage)
+
             if (response.isSuccessful) {
                 // Register berhasil
                 val authResponse = response.body()
                 println("Registration successful. Auth token: ${authResponse?.jwtToken}")
+                Auth.Login
+
             } else {
                 // Error occurred during registration
                 println("Registration failed. Status code: ${response.code()}")
                 println("Response body: ${response.errorBody()?.string()}")
 
+                when (response.code()) {
+                    400 -> RegisterResult.Error("Error in Data Formatting")
+                    401 -> RegisterResult.Error("Unauthorized")
+                    403 -> RegisterResult.Error("Forbidden")
+                    500 -> RegisterResult.Error("Server Error")
+                    else -> RegisterResult.Error("Other status code: ${response.code()}")
+                }
                 // Handle status code lainnya jika diperlukan
             }
-    } catch (e: Exception) {
-        // Tangani kesalahan koneksi atau kesalahan lainnya
-        println("Error: ${e.message}")
-        when (response.code()) {
-        400 -> LoginResult.Error("Error in Data Formatting")
-        else -> LoginResult.Error("Other status code: ${response.code()}")
-    }
+        } catch (e: Exception) {
+            // Tangani kesalahan koneksi atau kesalahan lainnya
+            println("Error: ${e.message}")
+        }
     }
 }
 
-}
+
 @Composable
 fun NavigateToLogin() {
     Login()
