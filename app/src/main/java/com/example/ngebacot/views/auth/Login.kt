@@ -299,6 +299,7 @@ suspend fun onClickLogin(apiService: ApiService, username: String, password: Str
 
             } else {
                 when (response.code()) {
+                    400 -> LoginResult.Error("Error in Data Formatting")
                     401 -> LoginResult.Error("Unauthorized")
                     403 -> LoginResult.Error("Forbidden")
                     500 -> LoginResult.Error("Server Error")

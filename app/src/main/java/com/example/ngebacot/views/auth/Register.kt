@@ -2,6 +2,7 @@
 
 package com.example.ngebacot.views.auth
 
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,12 +46,17 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.R
+import com.example.ngebacot.core.data.local.auth.AuthLocalDatastore
 import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.data.remote.request.RegisterRequest
+import com.example.ngebacot.core.domain.model.UserModel
 import com.example.ngebacot.core.utils.AppConstants
+import com.example.ngebacot.navigation.Screens
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -70,6 +76,7 @@ class UserRegister() {
 class ErrorMessage() {
     var emailErrorText by mutableStateOf("")// Pesan kesalahan untuk inputan email
     var usernameErrorText by mutableStateOf("")// Pesan kesalahan untuk inputan username
+    var passwordErrorText by mutableStateOf("")// Pesan kesalahan untuk inputan password
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -231,7 +238,7 @@ fun Register(
                     color = Color.Red,
                     fontSize = 12.sp, // Ukuran font yang lebih kecil
                     modifier = Modifier
-                        .padding(start = 16.dp, top = 4.dp, bottom = 4.dp) // Geser ke kiri dan tambahkan margin bawah
+                        .padding(start = 16.dp, bottom = 4.dp) // Geser ke kiri dan tambahkan margin bawah
                 )
             }
 //          Password
@@ -276,6 +283,18 @@ fun Register(
                 ),
                 shape = RoundedCornerShape(50.dp),
             )
+
+            // Tampilkan pesan kesalahan password di bawah inputan password
+            if (errorMessage.passwordErrorText.isNotEmpty()) {
+                Text(
+                    text = errorMessage.passwordErrorText,
+                    color = Color.Red,
+                    fontSize = 12.sp, // Ukuran font yang lebih kecil
+                    modifier = Modifier
+                        .padding(start = 16.dp, bottom = 4.dp) // Geser ke kiri dan tambahkan margin bawah
+                )
+            }
+
 //            Confirm Password
             OutlinedTextField(
                 value = userRegister.confirmPassword,
@@ -350,6 +369,14 @@ fun Register(
                             .height(60.dp)
                             .width(270.dp)
                             .padding(top = 10.dp)
+                            /*
+                            Modifier .conditional
+                            jika emailRegex, usernameRegex, dan passwordRegex
+                            isNotEmpty, maka navigate to login
+                             */
+                            .clickable {
+                                navController.navigate("Login")
+                            }
                         ,
                         enabled = !passwordMismatch,
                         shape = RoundedCornerShape(50.dp),
@@ -392,21 +419,88 @@ fun Register(
 
 }
 
-
-
-suspend fun onClickRegister(email: String, username: String, password: String, errorMessage: ErrorMessage) {
-    val baseUrl = AppConstants.BASE_URL
-
-
+fun emailRegex(email: String, errorMessage: ErrorMessage): String {
     val emailRegex = Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")
     if (!email.matches(emailRegex)) {
         // Set pesan kesalahan untuk email invalid format
-        errorMessage.emailErrorText  = "Invalid email format"
-        println("Invalid email format")
-        return
+        errorMessage.emailErrorText = "Invalid email format"
     }
+    return errorMessage.emailErrorText
+}
 
-    // Pastikan bahwa password dan konfirmasi password sesuai
+fun usernameRegex(username: String, errorMessage: ErrorMessage): String {
+    val usernameRegex = Regex("^[^\\s]{1,20}$")
+    if (!username.matches(usernameRegex)) {
+        // Set pesan kesalahan untuk email invalid format
+        errorMessage.usernameErrorText  = "Username contains no space"
+    }
+    return errorMessage.usernameErrorText
+}
+
+fun passwordRegex(password: String, errorMessage: ErrorMessage): String {
+    val passwordRegex = Regex("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d\\s])[a-zA-Z\\d[^a-zA-Z\\d\\s]]{8,30}$")
+    if (!password.matches(passwordRegex)) {
+        // Set pesan kesalahan untuk email invalid format
+        errorMessage.passwordErrorText  = "Min 8 character" +
+                "Combination Uppercase and Lower Case, " +
+                "Number, and Symbol"
+    }
+    return errorMessage.passwordErrorText
+}
+
+
+//suspend fun onClickRegister(email: String, username: String, password: String, errorMessage: ErrorMessage) {
+//    val baseUrl = AppConstants.BASE_URL
+//
+//    val emailCheck = emailRegex(email, errorMessage)
+//    val usernameCheck = usernameRegex(email, errorMessage)
+//    val passwordCheck = passwordRegex(password, errorMessage)
+//
+//    when (response.code()) {
+//        400 -> LoginResult.Error("Error in Data Formatting")
+//        else -> LoginResult.Error("Other status code: ${response.code()}")
+//    }
+//
+//    // Pastikan bahwa password dan konfirmasi password sesuai
+//    val registerRequest = RegisterRequest(email, username, password)
+//
+//    val retrofit = Retrofit.Builder()
+//        .baseUrl(baseUrl)
+//        .addConverterFactory(GsonConverterFactory.create())
+//        .build()
+//
+//    val apiService = retrofit.create(ApiService::class.java)
+//
+//    try {
+//        val response = withContext(Dispatchers.IO) {
+//            apiService.register(registerRequest)
+//        }
+//
+//        if (response.isSuccessful) {
+//            // Register berhasil
+//            val authResponse = response.body()
+//            println("Registration successful. Auth token: ${authResponse?.jwtToken}")
+//        } else {
+//            // Error occurred during registration
+//            println("Registration failed. Status code: ${response.code()}")
+//            println("Response body: ${response.errorBody()?.string()}")
+//
+//            // Handle status code lainnya jika diperlukan
+//        }
+//    } catch (e: Exception) {
+//        // Tangani kesalahan koneksi atau kesalahan lainnya
+//        println("Error: ${e.message}")
+//    }
+//}
+
+suspend fun onClickRegister(email: String, username: String, password: String, errorMessage: ErrorMessage) {
+
+    val baseUrl = AppConstants.BASE_URL
+
+    val emailCheck = emailRegex(email, errorMessage)
+    val usernameCheck = usernameRegex(email, errorMessage)
+    val passwordCheck = passwordRegex(password, errorMessage)
+
     val registerRequest = RegisterRequest(email, username, password)
 
     val retrofit = Retrofit.Builder()
@@ -416,30 +510,38 @@ suspend fun onClickRegister(email: String, username: String, password: String, e
 
     val apiService = retrofit.create(ApiService::class.java)
 
-    try {
-        val response = withContext(Dispatchers.IO) {
-            apiService.register(registerRequest)
-        }
 
-        if (response.isSuccessful) {
-            // Register berhasil
-            val authResponse = response.body()
-            println("Registration successful. Auth token: ${authResponse?.jwtToken}")
-        } else {
-            // Error occurred during registration
-            println("Registration failed. Status code: ${response.code()}")
-            println("Response body: ${response.errorBody()?.string()}")
+    val scope = CoroutineScope(Dispatchers.IO)
 
-            // Handle status code lainnya jika diperlukan
-        }
+    scope.launch() {
+        try {
+            val response = withContext(Dispatchers.IO) {
+                apiService.register(registerRequest)
+            }
+
+            if (response.isSuccessful) {
+                // Register berhasil
+                val authResponse = response.body()
+                println("Registration successful. Auth token: ${authResponse?.jwtToken}")
+            } else {
+                // Error occurred during registration
+                println("Registration failed. Status code: ${response.code()}")
+                println("Response body: ${response.errorBody()?.string()}")
+
+                // Handle status code lainnya jika diperlukan
+            }
     } catch (e: Exception) {
         // Tangani kesalahan koneksi atau kesalahan lainnya
         println("Error: ${e.message}")
+        when (response.code()) {
+        400 -> LoginResult.Error("Error in Data Formatting")
+        else -> LoginResult.Error("Other status code: ${response.code()}")
+    }
     }
 }
 
-
+}
 @Composable
-fun navigateToLogin() {
-
+fun NavigateToLogin() {
+    Login()
 }
