@@ -52,10 +52,10 @@ import com.example.ngebacot.core.data.remote.client.ApiClient
 import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.data.remote.request.LoginRequest
 import com.example.ngebacot.core.domain.model.UserModel
-import com.example.ngebacot.navigation.Screens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -72,11 +72,10 @@ sealed class LoginResult {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-
 fun Login(
     hasError: Boolean = false,
     context: Context = LocalContext.current,
-    navController: NavHostController = rememberNavController(),
+    navController: NavHostController = rememberNavController()
 ) {
     val apiClient = remember { ApiClient(context = context) }
     val biruBaseCard = Color(0xFF7C92F5)
@@ -200,7 +199,7 @@ fun Login(
                 .align(alignment = Alignment.CenterHorizontally)) {
                 Column() {
                     // Menggunakan instance apiClient untuk mengakses apiService
-                    LoginButton(apiClient.apiService,userLogin, coroutineScope, context)
+                    LoginButton(apiClient.apiService,userLogin, coroutineScope, context, navController,hasError)
                     Row {
                         Text(
                             fontSize = 16.sp,
@@ -233,7 +232,7 @@ fun Login(
 }
 
 @Composable
-fun LoginButton(apiService: ApiService,userLogin: UserLogin, coroutineScope: CoroutineScope, context: Context){
+fun LoginButton(apiService: ApiService,userLogin: UserLogin, coroutineScope: CoroutineScope, context: Context, navController: NavHostController,hasError:Boolean){
     val btnColorLogin = Color(0xFFFF6978)
 //    custom font
     val poppins = FontFamily (
@@ -246,7 +245,7 @@ fun LoginButton(apiService: ApiService,userLogin: UserLogin, coroutineScope: Cor
     Button(
         onClick = {
             coroutineScope.launch {
-                onClickLogin(apiService,userLogin.username, userLogin.password,context)
+                onClickLogin(apiService,userLogin.username, userLogin.password,context, navController,hasError)
             }
         },
         modifier = Modifier
@@ -265,49 +264,52 @@ fun LoginButton(apiService: ApiService,userLogin: UserLogin, coroutineScope: Cor
 *  Handle api data login, dont forget to see http response and code thankyou
 */
 @OptIn(ExperimentalMaterial3Api::class)
-suspend fun onClickLogin(apiService: ApiService, username: String, password: String, context: Context) {
+suspend fun onClickLogin(apiService: ApiService, username: String, password: String, context: Context, navController: NavHostController,hasError:Boolean) {
     val loginRequest = LoginRequest(username, password)
-
+    val apiClient = ApiClient(context)
 
     val scope = CoroutineScope(Dispatchers.IO)
 
     scope.launch {
         try {
-            val response = apiService.login(loginRequest)
+            val response = withContext(Dispatchers.IO) {
+                apiClient.apiService.login(loginRequest)
+            }
 
             if (response.isSuccessful) {
                 val authResponse = response.body()
-
+                println("AuthResponse: $authResponse")
                 if (authResponse != null) {
                     val jwtToken = authResponse.jwtToken
                     val user = authResponse.user
 
-                    if (jwtToken != null && user != null) {
+                    if (!jwtToken.isNullOrEmpty() && user != null) {
                         AuthLocalDatastore.saveToken(context, jwtToken)
-                        UserModel(user.id, user.username, user.email, user.name, user.coverpic, user.profilepic, user.city, user.website, user.created_at)
-                            .also {
-                                // Navigate to Home page after successful login
-                                Screens.HomePage
-                            }
-                            .let { LoginResult.Success(it) }
+                        AuthLocalDatastore.saveUser(context, user)
+                        withContext(Dispatchers.Main) {
+                            navController.navigate("HomePage")
+                        }
                     } else {
-                        LoginResult.Error("Unexpected response body")
+                        println("Error: Unexpected null or empty jwtToken in response")
+                        // Handle the case where jwtToken is null or empty
                     }
                 } else {
-                    LoginResult.Error("Unexpected response body")
+                    // Print error message from the server if available
+                    val errorBody = response.errorBody()?.string()
+                    println("Error: Unexpected null response body")
+                    // Handle null response body
                 }
-
             } else {
-                when (response.code()) {
-                    401 -> LoginResult.Error("Unauthorized")
-                    403 -> LoginResult.Error("Forbidden")
-                    500 -> LoginResult.Error("Server Error")
-                    else -> LoginResult.Error("Other status code: ${response.code()}")
-                }
+                // Print error message from the server if available
+                val errorBody = response.errorBody()?.string()
+                println("Error: ${response.code()}, Body: $errorBody")
+                // Handle unsuccessful response
             }
         } catch (e: Exception) {
-            LoginResult.Error("Network error or other exception: ${e.message}")
+            println("Error: ${e.message}")
             e.printStackTrace()
+            // Handle exceptions
         }
     }
 }
+

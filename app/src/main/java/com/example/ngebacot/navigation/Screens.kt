@@ -1,8 +1,5 @@
 package com.example.ngebacot.navigation
 
-import androidx.annotation.StringRes
-import com.example.ngebacot.R
-
 enum class Screens {
     HomePage,
     ProfilePage

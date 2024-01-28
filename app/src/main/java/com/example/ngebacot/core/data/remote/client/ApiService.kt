@@ -1,6 +1,7 @@
 package com.example.ngebacot.core.data.remote.client
 
 import com.example.ngebacot.core.data.remote.request.LoginRequest
+import com.example.ngebacot.core.data.remote.request.RegisterRequest
 import com.example.ngebacot.core.data.remote.response.AuthResponse
 import com.example.ngebacot.core.data.remote.response.PostResponse
 import okhttp3.ResponseBody
@@ -14,13 +15,13 @@ interface ApiService {
     //End Point Register
     @POST("api/auth/register")
     suspend fun register(
-        @Body registerRequest: String
+        @Body requestBody: RegisterRequest
     ): Response<AuthResponse>
 
     //Endpoint Login
     @POST("api/auth/login")
     suspend fun login(
-        @Body loginRequest: LoginRequest
+        @Body requestBody: LoginRequest
     ): Response<AuthResponse>
 
     @POST("api/auth/logout")

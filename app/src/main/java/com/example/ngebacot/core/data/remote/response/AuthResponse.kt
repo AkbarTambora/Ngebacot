@@ -1,11 +1,12 @@
-package com.example.ngebacot.core.data.remote.response
+    package com.example.ngebacot.core.data.remote.response
 
-import com.example.ngebacot.core.domain.model.UserModel
-import kotlinx.serialization.SerialName
+    import com.example.ngebacot.core.domain.model.UserModel
+    import kotlinx.serialization.SerialName
+    import kotlinx.serialization.Serializable
 
-data class AuthResponse (
-    @SerialName("jwtToken")
-    val jwtToken: String,
-    @SerialName("user")
-    val user: UserModel
-)
+    @Serializable
+    data class AuthResponse (
+        @SerialName("jwt-token")
+        val jwtToken: String,
+        val user: UserModel
+    )
