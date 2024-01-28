@@ -7,6 +7,7 @@ import java.time.LocalDateTime
 
 @Serializable
 data class AuthModel(
+    @SerialName("jwt-token")
     val jwtToken : String,
     val user : User
 )

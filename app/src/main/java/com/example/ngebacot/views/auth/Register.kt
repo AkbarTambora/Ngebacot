@@ -143,7 +143,6 @@ suspend fun onClickRegister(email: String, username: String, password: String, e
 
     val apiService = retrofit.create(ApiService::class.java)
 
-
     val scope = CoroutineScope(Dispatchers.IO)
 
     scope.launch {
@@ -649,9 +648,4 @@ fun Register(
             }
         }
     }
-}
-
-@Composable
-fun NavigateToLogin() {
-    Login()
 }

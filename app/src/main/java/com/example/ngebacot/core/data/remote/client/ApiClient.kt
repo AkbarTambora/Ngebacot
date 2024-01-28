@@ -12,13 +12,21 @@ class ApiClient(context:Context){
     /*
     *  Memasukkan JWT Token kedalam header
     */
-    private val authInterceptor = Interceptor{
-        chain ->
-        val request = chain.request().newBuilder()
-            .addHeader("Authorization", "Bearer${AuthLocalDatastore.getToken(context)}")
-            .build()
-        chain.proceed(request)
+    private val authInterceptor = Interceptor { chain ->
+        val token = AuthLocalDatastore.getToken(context)
+        if (!token.isNullOrEmpty()) {
+            val request = chain.request().newBuilder()
+                .addHeader("Authorization", "Bearer $token")
+                .build()
+            chain.proceed(request)
+        } else {
+            // Token null atau kosong, lakukan penanganan di sini
+            println("Error: Token is null or empty")
+            // Misalnya, tampilkan pesan kesalahan atau lakukan tindakan yang sesuai
+            chain.proceed(chain.request()) // Lanjutkan permintaan tanpa token
+        }
     }
+
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(authInterceptor)
         .build()
