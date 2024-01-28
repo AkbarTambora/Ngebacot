@@ -91,7 +91,7 @@ export const login = (req, res) => {
 
         //JWT TOKEN AND SEND DATA
         res.status(200).header("Authorization",`Bearer ${token}`).json({
-            "jwt-token": token,
+            "jwtToken": token,
             user: {
                 id: userInfo.id,
                 username: userInfo.username,
