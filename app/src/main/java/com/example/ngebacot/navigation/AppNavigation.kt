@@ -40,7 +40,7 @@ fun AppNavigation() {
             ) {
                 composable(route = Screens.HomePage.name) {
                     // Memasukkan iconTwitter() di dalam HomePage
-                    HomePage()
+                    HomePage(navController)
                     iconTwitters()
                 }
                 composable(route = Screens.ProfilePage.name) {

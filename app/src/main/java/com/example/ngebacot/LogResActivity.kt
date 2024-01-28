@@ -1,12 +1,10 @@
 package com.example.ngebacot
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.ngebacot.screens.HomePage
 import com.example.ngebacot.views.auth.Login
 import com.example.ngebacot.views.auth.Register
 
@@ -20,6 +18,9 @@ fun LogResActivity() {
         }
         composable(route = "Register") {
             Register(navController = navController)
+        }
+        composable(route = "Homepage") {
+            HomePage(navController = navController)
         }
     }
 }

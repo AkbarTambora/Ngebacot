@@ -245,7 +245,14 @@ fun LoginButton(apiService: ApiService,userLogin: UserLogin, coroutineScope: Cor
     Button(
         onClick = {
             coroutineScope.launch {
-                onClickLogin(apiService,userLogin.username, userLogin.password,context, navController,hasError)
+                onClickLogin(
+                    apiService,
+                    userLogin.username,
+                    userLogin.password,
+                    context,
+                    navController,
+                    hasError
+                )
             }
         },
         modifier = Modifier
@@ -289,6 +296,7 @@ suspend fun onClickLogin(apiService: ApiService, username: String, password: Str
                         withContext(Dispatchers.Main) {
                             navController.navigate("HomePage")
                         }
+                        navController.navigate("HomePage")
                     } else {
                         println("Error: Unexpected null or empty jwtToken in response")
                         // Handle the case where jwtToken is null or empty

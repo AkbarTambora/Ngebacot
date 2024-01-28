@@ -2,9 +2,11 @@ package com.example.ngebacot.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun HomePage() {
+fun HomePage(navController: NavHostController = rememberNavController()) {
     iconTwitters()
     Column {
         BacotanUser(
