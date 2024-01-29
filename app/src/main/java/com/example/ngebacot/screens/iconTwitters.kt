@@ -1,5 +1,6 @@
 package com.example.ngebacot.screens
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -40,16 +42,35 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+import com.example.ngebacot.core.data.local.auth.AuthLocalDatastore
+import com.example.ngebacot.core.data.remote.client.ApiClient
+import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.ui.theme.NgebacotTheme
 import com.example.ngebacot.ui.theme.btnColorLogin
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import androidx.compose.ui.platform.LocalContext
+import com.example.ngebacot.core.domain.model.PostModel
+
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun iconTwitters() {
+fun iconTwitters(
+    context: Context = LocalContext.current,
+) {
     var text by remember { mutableStateOf("") }
     var isEditing by remember { mutableStateOf(false) }
 
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+
+//    variable handle api
+    val apiClient = remember { ApiClient(context = context) }
+    val coroutineScope = rememberCoroutineScope()
+    val jwtToken = AuthLocalDatastore.getToken(context) ?: ""
+    val user = AuthLocalDatastore.getUser(context)
+    val userId = user?.id ?: -1L
+    val content = PostModel(caption = text, img = "url_placeholder")
 
 //    untuk limit karakter yg diketik user (sama kaya twitter max 280 karakter)
     val maxLength = 280
@@ -60,6 +81,7 @@ fun iconTwitters() {
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Transparent)
+            .zIndex(1f)
     ) {
         // TextField untuk menulis teks (ditampilkan atau disembunyikan berdasarkan isEditing)
         if (isEditing) {
@@ -103,21 +125,9 @@ fun iconTwitters() {
 //                    textColor = Color(11,10,10),
                 )
             )
-            Button(
-                onClick = {
-//                    cari cara untuk mengambil function createPost, karena tidak terbaca. Functionnya ada di PostViewModel
-                    /*PostViewModel.createPost(token, postText) */// Gantilah dengan cara memanggil metode createPost yang sesuai
-                },
-                modifier = Modifier
-                    .height(65.dp)
-                    .width(90.dp)
-                    .padding(top = 30.dp)
-                    .offset(x = 280.dp),
-                shape = RoundedCornerShape(50.dp),
-                colors = ButtonDefaults.buttonColors(btnColorLogin)
-            ) {
-                Text("Post", fontSize = 14.sp)
-            }
+//            button untuk post postingan
+            PostButton(apiClient.apiService, coroutineScope, jwtToken, userId, content)
+
             IconButton(
                 onClick = {
                     isEditing = !isEditing
@@ -131,6 +141,7 @@ fun iconTwitters() {
                     .background(Color.Transparent)
                     .align(Alignment.TopStart)
                     .padding(start = 22.dp, top = 21.dp)
+                    .zIndex(1f)
             ) {
             Icon(
                 imageVector = Icons.Default.Close,
@@ -177,4 +188,69 @@ fun ComposableWithPencilIconPreview() {
         iconTwitters()
     }
 }
+
+@Composable
+// button post
+fun PostButton(
+    apiService: ApiService,
+    coroutineScope: CoroutineScope,
+    jwtToken: String,
+    userId: Number, // ID pengguna terkait dengan konten
+    content: PostModel // Data konten yang ingin diposting
+    ){
+    Button(
+        onClick = {
+            coroutineScope.launch {
+                postContent(
+                    apiService,
+                    jwtToken,
+                    userId,
+                    content
+                )
+            }
+        },
+        modifier = Modifier
+            .height(65.dp)
+            .width(90.dp)
+            .padding(top = 30.dp)
+            .offset(x = 280.dp)
+            .zIndex(1f),
+        shape = RoundedCornerShape(50.dp),
+        colors = ButtonDefaults.buttonColors(btnColorLogin)
+    ) {
+        Text("Post", fontSize = 14.sp)
+    }
+}
+
+suspend fun postContent(
+    apiService: ApiService,
+    jwtToken: String,
+    userId: Number, // ID pengguna terkait dengan konten
+    content: PostModel // Data konten yang ingin diposting
+) {
+    val headers = mapOf(
+        "Authorization" to "Bearer $jwtToken",
+        "Content-Type" to "application/json"
+    )
+
+    try {
+        // Melakukan panggilan POST ke API untuk memposting konten
+        val postResponse = apiService.postContent(headers, userId, content)
+
+        // Memeriksa apakah responsenya berhasil
+        if (postResponse.isSuccessful) {
+            println("Post successful")
+            // Handle jika posting berhasil
+        } else {
+            // Handle jika posting tidak berhasil
+            val errorBody = postResponse.errorBody()?.string()
+            println("Error: ${postResponse.code()}, Body: $errorBody")
+        }
+    } catch (e: Exception) {
+        // Handle kesalahan eksekusi atau jaringan saat posting
+        println("Error: ${e.message}")
+        e.printStackTrace()
+    }
+}
+
 

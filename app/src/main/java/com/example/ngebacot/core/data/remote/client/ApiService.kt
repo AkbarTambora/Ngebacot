@@ -4,11 +4,13 @@ import com.example.ngebacot.core.data.remote.request.LoginRequest
 import com.example.ngebacot.core.data.remote.request.RegisterRequest
 import com.example.ngebacot.core.data.remote.response.AuthResponse
 import com.example.ngebacot.core.data.remote.response.PostResponse
+import com.example.ngebacot.core.domain.model.PostModel
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.Header
+import retrofit2.http.HeaderMap
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -28,8 +30,9 @@ interface ApiService {
     suspend fun logout(): ResponseBody
 
     @POST("/api/posts")
-    suspend fun createPost(
-        @Header("Authorization") token: String,
-        @Body postRequest: PostResponse
+    suspend fun postContent(
+        @HeaderMap headers: Map<String, String>,
+        @Query("userId") userId: Number,
+        @Body content: PostModel
     ): Response<PostResponse>
 }
