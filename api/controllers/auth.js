@@ -56,7 +56,7 @@ export const register = (req, res) => {
         const emailFormat = /\S+@\S+\.\S+/;
         const isValidEmail = emailFormat.test(email);
         if (!isValidEmail) {
-            return res.status(403).json({ message: "Invalid email format!" });
+            return res.status(400).json({ message: "Invalid email format!" });
         }
 
         // Hash the password and create a new user
