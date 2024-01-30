@@ -2,6 +2,8 @@ package com.example.ngebacot.views.auth
 
 //import androidx.compose.foundation.layout.FlowRowScopeInstance.align
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -26,6 +29,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +56,7 @@ import com.example.ngebacot.core.data.remote.client.ApiClient
 import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.data.remote.request.LoginRequest
 import com.example.ngebacot.core.domain.model.UserModel
+import com.example.ngebacot.core.utils.checkInternetConnection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -69,6 +74,11 @@ sealed class LoginResult {
     data class Success(val userModel: UserModel) : LoginResult()
     data class Error(val errorMessage: String) : LoginResult()
 }
+
+//class ErrorMessage() {
+//    var usernameErrorText by mutableStateOf("") // Pesan kesalahan untuk inputan username
+//    var passwordErrorText by mutableStateOf("") // Pesan kesalahan untuk inputan password
+//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,12 +105,35 @@ fun Login(
 
     val userLogin = remember { UserLogin() }
     val coroutineScope = rememberCoroutineScope()
+    val errorMessage = remember {ErrorMessage()}
+    val context = LocalContext.current // Ambil context lokal
 //    var username by remember { mutableStateOf("")}
 //    var password by remember { mutableStateOf("")}
 
 //    kode untuk hide or not pw
     val focusManager = LocalFocusManager.current
     val showPassword = remember { mutableStateOf(false) }
+    // State untuk status koneksi internet
+    val isInternetConnected = remember { mutableStateOf(checkInternetConnection(context)) }
+
+    // Menggunakan effect untuk memperbarui status koneksi internet
+    DisposableEffect(isInternetConnected.value) {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                isInternetConnected.value = true
+            }
+
+            override fun onLost(network: Network) {
+                isInternetConnected.value = false
+            }
+        }
+        connectivityManager.registerDefaultNetworkCallback(networkCallback)
+        // Hapus callback saat komponen dihentikan
+        onDispose {
+            connectivityManager.unregisterNetworkCallback(networkCallback)
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -198,8 +231,37 @@ fun Login(
             Row(modifier = Modifier
                 .align(alignment = Alignment.CenterHorizontally)) {
                 Column() {
+                    // Pengecekan koneksi internet sebelum login
+                    if (!isInternetConnected.value) {
+                        AlertDialog(
+                            onDismissRequest = { /* Tidak lakukan apa-apa saat dialog ditutup */ },
+                            title = { Text(text = "No Internet Connection") },
+                            text = {
+                                Text(
+                                    text = "Please check your internet connection and try again.",
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                            },
+                            confirmButton = {
+                                Button(
+                                    onClick = { /* Tidak lakukan apa-apa saat tombol "OK" ditekan */ },
+                                    colors = ButtonDefaults.buttonColors(contentColor = Color.White)
+                                ) {
+                                    Text("OK")
+                                }
+                            }
+                        )
+                    }
                     // Menggunakan instance apiClient untuk mengakses apiService
-                    LoginButton(apiClient.apiService,userLogin, coroutineScope, context, navController,hasError)
+                    LoginButton(
+                        apiClient.apiService,
+                        userLogin,
+                        coroutineScope,
+                        context,
+                        navController,
+                        hasError,
+                        errorMessage
+                    )
                     Row {
                         Text(
                             fontSize = 16.sp,
@@ -228,11 +290,10 @@ fun Login(
             }
         }
     }
-
 }
 
 @Composable
-fun LoginButton(apiService: ApiService,userLogin: UserLogin, coroutineScope: CoroutineScope, context: Context, navController: NavHostController,hasError:Boolean){
+fun LoginButton(apiService: ApiService,userLogin: UserLogin, coroutineScope: CoroutineScope, context: Context, navController: NavHostController,hasError:Boolean, errorMessage: ErrorMessage){
     val btnColorLogin = Color(0xFFFF6978)
 //    custom font
     val poppins = FontFamily (
@@ -251,7 +312,8 @@ fun LoginButton(apiService: ApiService,userLogin: UserLogin, coroutineScope: Cor
                     userLogin.password,
                     context,
                     navController,
-                    hasError
+                    hasError,
+                    errorMessage
                 )
             }
         },
@@ -271,7 +333,15 @@ fun LoginButton(apiService: ApiService,userLogin: UserLogin, coroutineScope: Cor
 *  Handle api data login, dont forget to see http response and code thankyou
 */
 @OptIn(ExperimentalMaterial3Api::class)
-suspend fun onClickLogin(apiService: ApiService, username: String, password: String, context: Context, navController: NavHostController,hasError:Boolean) {
+suspend fun onClickLogin(
+    apiService: ApiService,
+    username: String,
+    password: String,
+    context: Context,
+    navController: NavHostController,
+    hasError: Boolean,
+    errorMessage: ErrorMessage
+) {
     val loginRequest = LoginRequest(username, password)
     val apiClient = ApiClient(context)
 
