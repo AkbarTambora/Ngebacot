@@ -500,7 +500,7 @@ fun Register(
                 ),
                 shape = RoundedCornerShape(50.dp),
 
-            )
+                )
             // Tampilkan pesan kesalahan username di bawah inputan username
             if (errorMessage.usernameErrorText.isNotEmpty()) {
                 Text(
