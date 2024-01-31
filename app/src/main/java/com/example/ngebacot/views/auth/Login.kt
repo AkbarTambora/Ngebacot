@@ -87,6 +87,15 @@ fun Login(
     context: Context = LocalContext.current,
     navController: NavHostController = rememberNavController()
 ) {
+    // Memeriksa apakah pengguna sudah login sebelumnya
+    val isLoggedIn = remember { AuthLocalDatastore.getToken(context) != null }
+
+    // Jika sudah login, langsung arahkan ke halaman beranda
+    if (isLoggedIn) {
+        navController.navigate("HomePage")
+        return
+    }
+    //apiClient
     val apiClient = remember { ApiClient(context = context) }
     val biruBaseCard = Color(0xFF7C92F5)
     val btnColorLogin = Color(0xFFFF6978)

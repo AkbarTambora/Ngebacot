@@ -89,6 +89,9 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
 
+    //Coil (image loading)
+    implementation("io.coil-kt:coil:2.1.0")
+
 //    Navigation
     val nav_version = "2.7.6"
     // Kotlin

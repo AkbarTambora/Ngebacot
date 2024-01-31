@@ -1,5 +1,7 @@
 package com.example.ngebacot.navigation
 
+import HomePage
+import HomeViewModel
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination
@@ -22,14 +25,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.ngebacot.screens.HomePage
+import com.example.ngebacot.core.data.remote.client.ApiClient
+import com.example.ngebacot.screens.IconTwitters
 import com.example.ngebacot.screens.ProfilePage
-import com.example.ngebacot.screens.iconTwitters
 
 @ExperimentalMaterial3Api
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+
+    // Pass the context if required
+    val context = LocalContext.current // Get the current context if needed
+
+    // Create an instance of ApiService using ApiClient
+    val apiService = ApiClient(context).apiService
+
+    // Create an instance of HomeViewModel and pass ApiService to it
+    val homeViewModel = HomeViewModel(context = context, apiService = apiService)
 
     Scaffold(
         content = { innerPadding ->
@@ -40,8 +52,8 @@ fun AppNavigation() {
             ) {
                 composable(route = Screens.HomePage.name) {
                     // Memasukkan iconTwitter() di dalam HomePage
-                    HomePage(navController)
-                    iconTwitters()
+                    HomePage(navController, homeViewModel = homeViewModel)
+                    IconTwitters()
                 }
                 composable(route = Screens.ProfilePage.name) {
                     ProfilePage()
