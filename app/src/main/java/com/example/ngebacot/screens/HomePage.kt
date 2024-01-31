@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.ngebacot.component.TopBar
 import com.example.ngebacot.core.utils.DateUtils
 import com.example.ngebacot.screens.BacotanUser
 import com.example.ngebacot.screens.IconTwitters
@@ -40,6 +41,7 @@ fun HomePage(
         homeViewModel.fetchPosts(coroutineScope)
     }
 
+    TopBar()
     IconTwitters() // Panggil IconTwitters tanpa parameter onPostSuccess karena tidak digunakan dalam fungsi ini
 
     // Tampilkan loading indicator jika data sedang dimuat
