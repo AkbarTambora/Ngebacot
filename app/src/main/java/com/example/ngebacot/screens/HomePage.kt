@@ -2,6 +2,7 @@
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -17,6 +18,7 @@ import com.example.ngebacot.screens.MainContent
 import com.example.ngebacot.screens.Message
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(
     navController: NavHostController = rememberNavController(),
@@ -41,7 +43,6 @@ fun HomePage(
     }
 
     IconTwitters() // Panggil IconTwitters tanpa parameter onPostSuccess karena tidak digunakan dalam fungsi ini
-
     // Tampilkan loading indicator jika data sedang dimuat
     if (homeViewModel.loadingState.value) {
         CircularProgressIndicator() // Tampilkan indikator progres
