@@ -28,6 +28,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.core.data.remote.client.ApiClient
 import com.example.ngebacot.screens.IconTwitters
 import com.example.ngebacot.screens.ProfilePage
+<<<<<<< HEAD
+import com.example.ngebacot.screens.IconTwitters
+=======
+>>>>>>> 6846f8cc43fb859a063e1b3f936891dafd581892
 
 @ExperimentalMaterial3Api
 @Composable
@@ -52,7 +56,11 @@ fun AppNavigation() {
             ) {
                 composable(route = Screens.HomePage.name) {
                     // Memasukkan iconTwitter() di dalam HomePage
+<<<<<<< HEAD
+                    HomePage(navController)
+=======
                     HomePage(navController, homeViewModel = homeViewModel)
+>>>>>>> 6846f8cc43fb859a063e1b3f936891dafd581892
                     IconTwitters()
                 }
                 composable(route = Screens.ProfilePage.name) {
