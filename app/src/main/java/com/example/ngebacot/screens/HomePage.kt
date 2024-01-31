@@ -7,7 +7,7 @@ import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun HomePage(navController: NavHostController = rememberNavController()) {
-    iconTwitters()
+    IconTwitters()
     Column {
         BacotanUser(
             msg = Message("Jono", "@kur","Hey, take a look at Jetpack Compose, it's great!")

@@ -24,7 +24,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.screens.HomePage
 import com.example.ngebacot.screens.ProfilePage
-import com.example.ngebacot.screens.iconTwitters
+import com.example.ngebacot.screens.IconTwitters
 
 @ExperimentalMaterial3Api
 @Composable
@@ -41,7 +41,7 @@ fun AppNavigation() {
                 composable(route = Screens.HomePage.name) {
                     // Memasukkan iconTwitter() di dalam HomePage
                     HomePage(navController)
-                    iconTwitters()
+                    IconTwitters()
                 }
                 composable(route = Screens.ProfilePage.name) {
                     ProfilePage()

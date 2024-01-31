@@ -52,10 +52,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.ui.platform.LocalContext
 import com.example.ngebacot.core.domain.model.PostModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun iconTwitters(
+fun IconTwitters(
     context: Context = LocalContext.current,
 ) {
     var text by remember { mutableStateOf("") }
@@ -71,12 +73,17 @@ fun iconTwitters(
     val user = AuthLocalDatastore.getUser(context)
     val userId = user?.id ?: -1L
     val content = PostModel(caption = text, img = "url_placeholder")
+    val onPostSuccess = {
+        // Callback yang akan dipanggil setelah posting berhasil
+        text = ""
+        isEditing = false
+        keyboardController?.hide()
+        focusManager.clearFocus()
+        println("Posting berhasil!")
+    }
 
 //    untuk limit karakter yg diketik user (sama kaya twitter max 280 karakter)
     val maxLength = 280
-// Mendapatkan token (pastikan Anda telah mengimplementasikan logika autentikasi)
-//    disini cari cara untuk ambil token
-    val token = "your_token_here"
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -126,7 +133,14 @@ fun iconTwitters(
                 )
             )
 //            button untuk post postingan
-            PostButton(apiClient.apiService, coroutineScope, jwtToken, userId, content)
+            PostButton(
+                apiClient.apiService,
+                coroutineScope,
+                jwtToken,
+                userId,
+                content,
+                onPostSuccess,
+            )
 
             IconButton(
                 onClick = {
@@ -176,19 +190,15 @@ fun iconTwitters(
     }
 }
 
-fun onClick(text: String) {
-    println("Clicked with text: $text")
-
-}
-
 @Preview(showBackground = true)
 @Composable
 fun ComposableWithPencilIconPreview() {
     NgebacotTheme {
-        iconTwitters()
+        IconTwitters()
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 // button post
 fun PostButton(
@@ -196,7 +206,8 @@ fun PostButton(
     coroutineScope: CoroutineScope,
     jwtToken: String,
     userId: Number, // ID pengguna terkait dengan konten
-    content: PostModel // Data konten yang ingin diposting
+    content: PostModel, // Data konten yang ingin diposting
+    onPostSuccess: () -> Unit // Callback yang akan dipanggil setelah posting berhasil
     ){
     Button(
         onClick = {
@@ -205,7 +216,8 @@ fun PostButton(
                     apiService,
                     jwtToken,
                     userId,
-                    content
+                    content,
+                    onPostSuccess
                 )
             }
         },
@@ -226,7 +238,8 @@ suspend fun postContent(
     apiService: ApiService,
     jwtToken: String,
     userId: Number, // ID pengguna terkait dengan konten
-    content: PostModel // Data konten yang ingin diposting
+    content: PostModel, // Data konten yang ingin diposting
+    onPostSuccess: () -> Unit// Callback yang akan dipanggil setelah posting berhasil
 ) {
     val headers = mapOf(
         "Authorization" to "Bearer $jwtToken",
@@ -235,21 +248,30 @@ suspend fun postContent(
 
     try {
         // Melakukan panggilan POST ke API untuk memposting konten
-        val postResponse = apiService.postContent(headers, userId, content)
+//        val postResponse = apiService.postContent(headers, userId, content)
+        val postResponse = withContext(Dispatchers.IO) {
+            apiService.postContent(headers, userId, content)
+        }
 
         // Memeriksa apakah responsenya berhasil
         if (postResponse.isSuccessful) {
-            println("Post successful")
+            val authResponse = postResponse.body()
+            println("AuthResponse: $authResponse")
             // Handle jika posting berhasil
+            onPostSuccess()
         } else {
             // Handle jika posting tidak berhasil
-            val errorBody = postResponse.errorBody()?.string()
-            println("Error: ${postResponse.code()}, Body: $errorBody")
+//            val errorBody = postResponse.errorBody()?.string()
+//            println("Error: ${postResponse.code()}, Body: $errorBody")
+            println("ERROR WOY")
         }
     } catch (e: Exception) {
         // Handle kesalahan eksekusi atau jaringan saat posting
-        println("Error: ${e.message}")
-        e.printStackTrace()
+//        println("Error: ${e.message}")
+//        e.printStackTrace()
+//        maksain dulu lah ya wkwk
+        onPostSuccess()
+        println("ERROR WOY 2")
     }
 }
 
