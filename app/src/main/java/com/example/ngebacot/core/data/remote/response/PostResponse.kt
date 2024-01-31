@@ -1,5 +1,9 @@
 package com.example.ngebacot.core.data.remote.response
 
-data class PostResponse (
-    val text: String
+import PostModel
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class PostResponse(
+    val data: List<PostModel>
 )

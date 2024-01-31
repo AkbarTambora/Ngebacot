@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +35,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ngebacot.R
 import com.example.ngebacot.ui.theme.NgebacotTheme
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 class BacotanUser  : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,62 +49,96 @@ class BacotanUser  : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background,
                 )
                 {
-                    BacotanUser(Message("Android", "Compose", "Jetpack Compose"))
+                    BacotanUser(
+                        Message(
+                            "Android",
+                            "Compose",
+                            "Jetpack Compose",
+                            LocalDateTime.now().minusMinutes(2)
+                        )
+                    )
                 }
             }
         }
     }
 }
 
-data class Message(val nama: String, val username: String,  val body: String)
+data class Message(
+    val nama: String,
+    val username: String,
+    val body: String,
+    val created_at:LocalDateTime )
+
+@Composable
+fun HomePageContent(messages: List<Message>) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp)
+    ) {
+        items(messages) { message ->
+            BacotanUser(msg = message)
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
 
 @Composable
 fun BacotanUser(msg: Message) {
-        OutlinedCard (
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-            ),
-            border = BorderStroke(1.dp, Color.Black),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp, 7.dp, 15.dp, 7.dp)
+    OutlinedCard (
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        border = BorderStroke(1.dp, Color.Black),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(15.dp, 7.dp, 15.dp, 7.dp)
+    ) {
+        Row (
+            modifier = Modifier.padding(10.dp) // Menambahkan padding di sini
         ) {
-            Row (
+            Box(
                 modifier = Modifier
-                    .padding(10.dp)
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
             ) {
-                Box(
+                Image(
+                    painter = painterResource(R.drawable.androidparty),
+                    contentDescription = "Foto Profil",
                     modifier = Modifier
                         .size(32.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary)
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.androidparty),
-                        contentDescription = "Foto Profil",
-                        modifier = Modifier
-                            // Set image size to 40 dp
-                            .size(32.dp)
-                            // Clip image to be shaped as a circle
-//                            Pastikan rasio aspek 1:1
-                            .clip(CircleShape)
-                    )
-                }
+                )
+            }
 
-                // Add a horizontal space between the image and the column
-                Spacer(modifier = Modifier.width(8.dp))
-                Column {
-                    Text(
-                        text = msg.nama,
-                        fontWeight = FontWeight.Bold
-                        )
-                    Text(text = msg.username)
-                    // Add a vertical space between the author and message texts
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(text = msg.body)
-                }
+            // Add a horizontal space between the image and the column
+            Spacer(modifier = Modifier.width(8.dp))
+            Column {
+                Text(
+                    text = "${msg.username} • ${getTimeAgo(msg.created_at)}",
+                    fontWeight = FontWeight.Bold
+                )
+                Text(text = msg.nama)
+                // Add a vertical space between the author and message texts
+                Spacer(modifier = Modifier.height(4.dp)) // Menambahkan jarak di sini
+                Text(text = msg.body)
             }
         }
+    }
+}
+
+
+@Composable
+fun getTimeAgo(createdAt: LocalDateTime): String {
+    val now = LocalDateTime.now()
+    val diff = ChronoUnit.SECONDS.between(createdAt, now)
+
+    return when {
+        diff < 60 -> "${diff}s ago"
+        diff < 3600 -> "${diff / 60}m ago"
+        diff < 86400 -> "${diff / 3600}h ago"
+        else -> "${diff / 86400}d ago"
+    }
 }
 
 
@@ -113,10 +152,10 @@ fun PreviewMessageCard() {
     NgebacotTheme {
         Column {
             BacotanUser(
-                msg = Message("Lexi", "@akbar", "Hey, take a look at Jetpack Compose, it's great!")
+                msg = Message("Lexi", "@akbar", "Hey, take a look at Jetpack Compose, it's great!", LocalDateTime.now().minusMinutes(30))
             )
             BacotanUser(
-                msg = Message("Jono", "@kur","Hey, take a look at Jetpack Compose, it's great!")
+                msg = Message("Jono", "@kur","Hey, take a look at Jetpack Compose, it's great!",LocalDateTime.now().minusMinutes(2))
             )
         }
 

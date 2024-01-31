@@ -1,9 +1,12 @@
 @file:OptIn(ExperimentalComposeUiApi::class, ExperimentalComposeUiApi::class,
-    ExperimentalComposeUiApi::class
+    ExperimentalComposeUiApi::class, ExperimentalComposeUiApi::class
 )
 
 package com.example.ngebacot.views.auth
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +33,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
@@ -55,7 +60,6 @@ import com.example.ngebacot.R
 import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.data.remote.request.RegisterRequest
 import com.example.ngebacot.core.utils.AppConstants
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -63,6 +67,7 @@ import kotlinx.serialization.Serializable
 import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
 
 
 @Serializable
@@ -104,6 +109,7 @@ fun usernameRegex(username: String, errorMessage: ErrorMessage): String {
     return errorMessage.usernameErrorText
 }
 
+
 fun passwordRegex(password: String, errorMessage: ErrorMessage): String {
     val passwordRegex = Regex("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d\\s])[a-zA-Z\\d[^a-zA-Z\\d\\s]]{8,30}$")
     if (!password.matches(passwordRegex)) {
@@ -115,24 +121,53 @@ fun passwordRegex(password: String, errorMessage: ErrorMessage): String {
     return errorMessage.passwordErrorText
 }
 
-suspend fun onClickRegister(email: String, username: String, password: String, errorMessage: ErrorMessage,navController: NavHostController) {
-
+suspend fun onClickRegister(
+    email: String,
+    username: String,
+    password: String,
+    errorMessage: ErrorMessage,
+    navController: NavHostController
+) {
     val baseUrl = AppConstants.BASE_URL
 
-    // Tandai sedang registrasi
-    isRegistering = true
+    // Validasi format email
+    val emailError = emailRegex(email, errorMessage)
 
-    // Reset pesan kesalahan
+    // Check if email is already registered on the server
+//    if (emailError.isEmpty()) {
+//        val isEmailExists = checkEmailExistsOnServer(email)
+//        if (isEmailExists) {
+//            errorMessage.emailErrorText = "Email already exists"
+//            return
+//        }
+//    }
+
+    // Check if username is already registered on the server
+//    val isUsernameExists = checkUsernameExistsOnServer(username)
+//    if (isUsernameExists) {
+//        errorMessage.usernameErrorText = "Username already exists"
+//        return
+//    }
+
+    // Check if both email and username already exist
+//    if (emailError.isEmpty() && isUsernameExists) {
+//        errorMessage.emailErrorText = "Email and Username already exist"
+//        errorMessage.usernameErrorText = "Email and Username already exist"
+//        return
+//    }
+
+    if (emailError.isNotEmpty()) {
+        // Email format is invalid
+        errorMessage.emailErrorText = emailError
+        return
+    }
+
+    isRegistering = true
     noInternetMessage = ""
     statusCodeMessage = ""
     generalErrorMessage = ""
 
-    // Cek koneksi internet
     checkInternetConnection()
-
-//    val emailCheck = emailRegex(email, errorMessage)
-//    val usernameCheck = usernameRegex(username, errorMessage)
-//    val passwordCheck = passwordRegex(password, errorMessage)
 
     val registerRequest = RegisterRequest(email, username, password)
 
@@ -143,83 +178,58 @@ suspend fun onClickRegister(email: String, username: String, password: String, e
 
     val apiService = retrofit.create(ApiService::class.java)
 
-    val scope = CoroutineScope(Dispatchers.IO)
+    try {
+        val response = apiService.register(registerRequest)
 
-    scope.launch {
-        if (isInternetAvailable) {
-            try {
-                val response = withContext(Dispatchers.IO) {
-                    apiService.register(registerRequest)
-                }
-
-                emailRegex(email, errorMessage)
-                usernameRegex(username, errorMessage)
-                passwordRegex(password, errorMessage)
-
-                if (response.isSuccessful) {
-                    // Register berhasil
-                    val authResponse = response.body()
-                    println("Registration successful. Auth token: ${authResponse?.jwtToken}")
-                    // Arahkan pengguna ke halaman login setelah berhasil registrasi
-                    withContext(Dispatchers.Main) {
-                        isRegistering = false // Hentikan animasi loading
-                        navController.navigate("Login")
-                    }
-
-                } else {
-                    // Error occurred during registration
-                    println("Registration failed. Status code: ${response.code()}")
-                    println("Response body: ${response.errorBody()?.string()}")
-
-                    when (response.code()) {
-                        400 -> {
-                            // Tangani Status Code 400
-                            val errorBody = response.errorBody()?.string()
-                            val errorJson = JSONObject(errorBody)
-                            val errors = errorJson.getJSONObject("errors")
-
-                            // Ambil pesan kesalahan untuk setiap field
-                            val usernameError = errors.getJSONArray("username").getString(0)
-                            val emailError = errors.getJSONArray("email").getString(0)
-                            val passwordError = errors.getJSONArray("password"). getString(0)
-
-                            // Set pesan kesalahan ke dalam errorMessage
-                            errorMessage.usernameErrorText = usernameError
-                            errorMessage.emailErrorText = emailError
-                            errorMessage.passwordErrorText = passwordError
-                        }
-                        401 -> RegisterResult.Error("Unauthorized")
-                        403 -> RegisterResult.Error("Forbidden")
-                        500 -> {
-                            // Tampilkan pesan status code 500
-                            statusCodeMessage = "Server Error"
-                            // ...
-                        }
-                        else -> {
-                            // Tangani status code lainnya jika diperlukan
-                            errorMessage.usernameErrorText = "Error occurred. Please try again."
-                            errorMessage.emailErrorText = "Error occurred. Please try again."
-                            errorMessage.passwordErrorText = "Error occurred. Please try again."
-                        }
-                    }
-                    // Handle status code lainnya jika diperlukan
-                }
-            } catch (e: Exception) {
-                // Tangani kesalahan koneksi atau kesalahan lainnya
-//                println("Error: ${e.message}")
-                generalErrorMessage = "No Internet Connection"
-            } finally {
-                // Setelah selesai registrasi, hentikan animasi loading
+        if (response.isSuccessful) {
+            val authResponse = response.body()
+            println("Registration successful. Auth token: ${authResponse?.jwtToken}")
+            withContext(Dispatchers.Main) {
                 isRegistering = false
+                navController.navigate("Login")
             }
-        } else{
-            // Tampilkan pesan ketika tidak ada koneksi internet
-            noInternetMessage = "No internet connection"
-            // Hentikan animasi loading
-            isRegistering = false
+        } else {
+            when (response.code()) {
+                400 -> {
+                    val errorBody = response.errorBody()?.string()
+                    val errorJson = JSONObject(errorBody)
+                    val errors = errorJson.getJSONObject("errors")
+
+                    errorMessage.usernameErrorText = errors.getJSONArray("username").getString(0)
+                    errorMessage.emailErrorText = errors.getJSONArray("email").getString(0)
+                    errorMessage.passwordErrorText = errors.getJSONArray("password").getString(0)
+                }
+                401 -> RegisterResult.Error("Unauthorized")
+                403 -> RegisterResult.Error("Forbidden")
+                409 -> {
+                    val errorBody = response.errorBody()?.string()
+                    val errorJson = JSONObject(errorBody)
+                    val errors = errorJson.getJSONObject("errors")
+
+                    errorMessage.usernameErrorText = errors.getJSONArray("username").getString(0)
+                    errorMessage.emailErrorText = errors.getJSONArray("email").getString(0)
+                    errorMessage.passwordErrorText = errors.getJSONArray("password").getString(0)
+                }
+                500 -> {
+                    statusCodeMessage = "Server Error"
+                }
+                else -> {
+                    errorMessage.usernameErrorText = "Error occurred. Please try again."
+                    errorMessage.emailErrorText = "Error occurred. Please try again."
+                    errorMessage.passwordErrorText = "Error occurred. Please try again."
+                }
+            }
         }
+    } catch (e: IOException) {
+        noInternetMessage = "No internet connection"
+    } catch (e: Exception) {
+        generalErrorMessage = "Error occurred. Please try again."
+//        statusCodeMessage = "Server Error"
+    } finally {
+        isRegistering = false
     }
 }
+
 
 
 // Tambahkan state untuk menyimpan status koneksi internet
@@ -246,8 +256,37 @@ fun checkInternetConnection() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Register(
+    context: Context = LocalContext.current,
     navController: NavHostController = rememberNavController()
 ) {
+    val context = LocalContext.current // Ambil context lokal
+
+
+    // State untuk status koneksi internet
+    val isInternetConnected = remember { mutableStateOf(
+        com.example.ngebacot.core.utils.checkInternetConnection(
+            context
+        )
+    ) }
+
+    // Menggunakan effect untuk memperbarui status koneksi internet
+    DisposableEffect(isInternetConnected.value) {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                isInternetConnected.value = true
+            }
+
+            override fun onLost(network: Network) {
+                isInternetConnected.value = false
+            }
+        }
+        connectivityManager.registerDefaultNetworkCallback(networkCallback)
+        // Hapus callback saat komponen dihentikan
+        onDispose {
+            connectivityManager.unregisterNetworkCallback(networkCallback)
+        }
+    }
 
     // Tambahkan pesan untuk menampilkan loading ketika registrasi
     if (isRegistering) {
@@ -583,6 +622,27 @@ fun Register(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    // Pengecekan koneksi internet sebelum login
+                    if (!isInternetConnected.value) {
+                        AlertDialog(
+                            onDismissRequest = { /* Tidak lakukan apa-apa saat dialog ditutup */ },
+                            title = { Text(text = "No Internet Connection") },
+                            text = {
+                                Text(
+                                    text = "Please check your internet connection and try again.",
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                            },
+                            confirmButton = {
+                                Button(
+                                    onClick = { /* Tidak lakukan apa-apa saat tombol "OK" ditekan */ },
+                                    colors = ButtonDefaults.buttonColors(contentColor = Color.White)
+                                ) {
+                                    Text("OK")
+                                }
+                            }
+                        )
+                    }
                     Button(
                         onClick = {
                             coroutineScope.launch {

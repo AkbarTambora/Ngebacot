@@ -1,5 +1,8 @@
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+
 package com.example.ngebacot.screens
 
+import PostModel
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,10 +25,13 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
@@ -46,59 +53,84 @@ import androidx.compose.ui.zIndex
 import com.example.ngebacot.core.data.local.auth.AuthLocalDatastore
 import com.example.ngebacot.core.data.remote.client.ApiClient
 import com.example.ngebacot.core.data.remote.client.ApiService
+import com.example.ngebacot.core.domain.model.UserModel
 import com.example.ngebacot.ui.theme.NgebacotTheme
-import com.example.ngebacot.ui.theme.btnColorLogin
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import androidx.compose.ui.platform.LocalContext
-import com.example.ngebacot.core.domain.model.PostModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
+import java.util.UUID
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+class PostingStatus {
+    var isPosting by mutableStateOf(false)
+    var isEditing by mutableStateOf(false)
+    var isEditingInitialized by mutableStateOf(false) // New property
+    var isPostSuccess by mutableStateOf(false)
+}
+
+fun generatePostId(): Int {
+    val uuid = UUID.randomUUID()
+    return uuid.hashCode()
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun IconTwitters(
+    onPostSuccess: () -> Unit = {},
     context: Context = LocalContext.current,
+    img: String? = null
 ) {
     var text by remember { mutableStateOf("") }
-    var isEditing by remember { mutableStateOf(false) }
-
+    val postingStatus = remember { PostingStatus() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-
-//    variable handle api
+    // Handling Api
     val apiClient = remember { ApiClient(context = context) }
     val coroutineScope = rememberCoroutineScope()
     val jwtToken = AuthLocalDatastore.getToken(context) ?: ""
     val user = AuthLocalDatastore.getUser(context)
-    val userId = user?.id ?: -1L
-    val content = PostModel(caption = text, img = "url_placeholder")
-    val onPostSuccess = {
-        // Callback yang akan dipanggil setelah posting berhasil
-        text = ""
-        isEditing = false
-        keyboardController?.hide()
-        focusManager.clearFocus()
-        println("Posting berhasil!")
-    }
+    val userId = user?.id ?: -1
+    val currentTime = LocalDateTime.now().toString()
+    val content = PostModel(
+        id = generatePostId(),
+        caption = text,
+        img = img,
+        userId = userId,
+        created_at = currentTime,
+        user = user ?: UserModel(
+            id = -1,
+            email = "",
+            username = "",
+            name = "",
+            city = "",
+            profilepic = "",
+            coverpic = "",
+            created_at = "",
+            website = ""
+        )
+    )
 
-//    untuk limit karakter yg diketik user (sama kaya twitter max 280 karakter)
     val maxLength = 280
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Transparent)
             .zIndex(1f)
     ) {
-        // TextField untuk menulis teks (ditampilkan atau disembunyikan berdasarkan isEditing)
-        if (isEditing) {
+        if (postingStatus.isEditing) {
+            // Reset text to empty when entering editing mode
+            if (!postingStatus.isEditingInitialized) {
+                text = ""
+                postingStatus.isEditingInitialized = true
+            }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
                     .background(Color(239, 230, 221)),
             )
-//            input text
             TextField(
                 value = text,
                 onValueChange = {
@@ -113,40 +145,42 @@ fun IconTwitters(
                     .fillMaxWidth()
                     .fillMaxHeight()
                     .align(Alignment.Center)
-                    .padding(top = 65.dp, start = 20.dp, end = 20.dp, bottom = 0.dp)
-                ,
+                    .padding(top = 65.dp, start = 20.dp, end = 20.dp, bottom = 0.dp),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        // Aksi yang dijalankan ketika keyboard "Done" ditekan
                         keyboardController?.hide()
                         focusManager.clearFocus()
                     }
                 ),
                 colors = TextFieldDefaults.textFieldColors(
-                    focusedIndicatorColor = Color(11,10,10),// Ubah warna teks saat fokus
-                    cursorColor = Color(11,10,10), // Ubah warna kursor
-                    containerColor = Color(239,230,221),
-//                    textColor = Color(11,10,10),
+                    focusedIndicatorColor = Color(11, 10, 10),
+                    cursorColor = Color(11, 10, 10),
+                    containerColor = Color(239, 230, 221),
                 )
             )
-//            button untuk post postingan
             PostButton(
                 apiClient.apiService,
                 coroutineScope,
                 jwtToken,
                 userId,
                 content,
-                onPostSuccess,
+                postingStatus,
+                onPostSuccess = {
+                    postingStatus.isPosting = false
+                    postingStatus.isPostSuccess = true
+                    postingStatus.isEditing = false
+                    onPostSuccess()
+                    // Reset text to empty after successful post
+                    text = ""
+                }
             )
-
             IconButton(
                 onClick = {
-                    isEditing = !isEditing
-                    if (!isEditing) {
-                        // Sembunyikan keyboard dan fokus dari TextField ketika mode edit dinonaktifkan
+                    postingStatus.isEditing = !postingStatus.isEditing
+                    if (!postingStatus.isEditing) {
                         keyboardController?.hide()
                         focusManager.clearFocus()
                     }
@@ -157,19 +191,18 @@ fun IconTwitters(
                     .padding(start = 22.dp, top = 21.dp)
                     .zIndex(1f)
             ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Edit",
-                modifier = Modifier
-                    .size(32.dp)
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Edit",
+                    modifier = Modifier
+                        .size(32.dp)
                 )
             }
         } else {
             IconButton(
                 onClick = {
-                    isEditing = !isEditing
-                    if (isEditing) {
-                        // Fokus ke TextField ketika mode edit diaktifkan
+                    postingStatus.isEditing = !postingStatus.isEditing
+                    if (postingStatus.isEditing) {
                         focusManager.clearFocus()
                         keyboardController?.show()
                     }
@@ -190,35 +223,72 @@ fun IconTwitters(
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun ComposableWithPencilIconPreview() {
-    NgebacotTheme {
-        IconTwitters()
+fun MainContent() {
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val coroutineScope = rememberCoroutineScope()
+
+        // Use LaunchedEffect to trigger the Snackbar when isPostSuccess changes
+        LaunchedEffect(snackbarHostState) {
+            if (snackbarHostState.currentSnackbarData != null) {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar("Post successful")
+                }
+            }
+        }
+
+        IconTwitters(
+            onPostSuccess = {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar("Post successful")
+                }
+            }
+        )
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+
 @Composable
-// button post
 fun PostButton(
     apiService: ApiService,
     coroutineScope: CoroutineScope,
     jwtToken: String,
-    userId: Number, // ID pengguna terkait dengan konten
-    content: PostModel, // Data konten yang ingin diposting
-    onPostSuccess: () -> Unit // Callback yang akan dipanggil setelah posting berhasil
-    ){
+    userId: Number,
+    content: PostModel,
+    postingStatus: PostingStatus,
+    onPostSuccess: () -> Unit
+) {
+    var isLoading by remember { mutableStateOf(false) }
+
     Button(
         onClick = {
-            coroutineScope.launch {
-                postContent(
-                    apiService,
-                    jwtToken,
-                    userId,
-                    content,
-                    onPostSuccess
-                )
+            if (!postingStatus.isPosting && !isLoading) {
+                postingStatus.isPosting = true
+                isLoading = true
+                coroutineScope.launch {
+                    try {
+                        postContent(
+                            apiService,
+                            jwtToken,
+                            userId,
+                            content
+                        )
+                        onPostSuccess()
+                    } catch (e: Exception) {
+                        println("Error posting: ${e.message}")
+                    } finally {
+                        postingStatus.isPosting = false
+                        isLoading = false
+                    }
+                }
             }
         },
         modifier = Modifier
@@ -228,7 +298,7 @@ fun PostButton(
             .offset(x = 280.dp)
             .zIndex(1f),
         shape = RoundedCornerShape(50.dp),
-        colors = ButtonDefaults.buttonColors(btnColorLogin)
+        colors = ButtonDefaults.buttonColors(Color.Blue)
     ) {
         Text("Post", fontSize = 14.sp)
     }
@@ -237,9 +307,8 @@ fun PostButton(
 suspend fun postContent(
     apiService: ApiService,
     jwtToken: String,
-    userId: Number, // ID pengguna terkait dengan konten
-    content: PostModel, // Data konten yang ingin diposting
-    onPostSuccess: () -> Unit// Callback yang akan dipanggil setelah posting berhasil
+    userId: Number,
+    content: PostModel
 ) {
     val headers = mapOf(
         "Authorization" to "Bearer $jwtToken",
@@ -253,26 +322,24 @@ suspend fun postContent(
             apiService.postContent(headers, userId, content)
         }
 
-        // Memeriksa apakah responsenya berhasil
         if (postResponse.isSuccessful) {
-            val authResponse = postResponse.body()
-            println("AuthResponse: $authResponse")
-            // Handle jika posting berhasil
-            onPostSuccess()
+            println("Post successful")
         } else {
-            // Handle jika posting tidak berhasil
-//            val errorBody = postResponse.errorBody()?.string()
-//            println("Error: ${postResponse.code()}, Body: $errorBody")
-            println("ERROR WOY")
+            val errorBody = postResponse.errorBody()?.string()
+            println("Error: ${postResponse.code()}, Body: $errorBody")
         }
     } catch (e: Exception) {
-        // Handle kesalahan eksekusi atau jaringan saat posting
-//        println("Error: ${e.message}")
-//        e.printStackTrace()
-//        maksain dulu lah ya wkwk
-        onPostSuccess()
-        println("ERROR WOY 2")
+        println("Error: ${e.message}")
+        e.printStackTrace()
     }
 }
 
-
+//Themes
+@Preview(showBackground = true)
+@Composable
+fun IconTwittersPreview() {
+    NgebacotTheme {
+        IconTwitters()
+        MainContent()
+    }
+}
