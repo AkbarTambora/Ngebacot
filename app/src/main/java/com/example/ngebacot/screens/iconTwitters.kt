@@ -83,7 +83,7 @@ fun IconTwitters(
     val postingStatus = remember { PostingStatus() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-
+    // Handling Api
     val apiClient = remember { ApiClient(context = context) }
     val coroutineScope = rememberCoroutineScope()
     val jwtToken = AuthLocalDatastore.getToken(context) ?: ""
