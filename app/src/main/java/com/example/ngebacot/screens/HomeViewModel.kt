@@ -12,6 +12,7 @@ class HomeViewModel(
     private val apiService: ApiService,
     private val context: Context
 ) {
+    val postSuccessState: MutableState<Boolean> = mutableStateOf(false)
 
     // State untuk menyimpan data post
     val postsState: MutableState<List<PostModel>> = mutableStateOf(emptyList())

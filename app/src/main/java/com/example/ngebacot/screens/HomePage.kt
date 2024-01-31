@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.ngebacot.core.utils.DateUtils
 import com.example.ngebacot.screens.BacotanUser
 import com.example.ngebacot.screens.IconTwitters
+import com.example.ngebacot.screens.MainContent
 import com.example.ngebacot.screens.Message
 import kotlinx.coroutines.delay
 
@@ -63,4 +64,9 @@ fun HomePage(
 
     // Tambahkan komponen SnackbarHost untuk menampilkan Snackbar
     SnackbarHost(hostState = snackbarHostState)
+    // Tambahkan MainContent di sini untuk menampilkan sebagai snackbar
+    if (homeViewModel.postSuccessState.value) {
+        MainContent()
+    }
+
 }

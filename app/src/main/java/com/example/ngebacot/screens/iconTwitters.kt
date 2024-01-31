@@ -56,7 +56,9 @@ import com.example.ngebacot.core.data.remote.client.ApiService
 import com.example.ngebacot.core.domain.model.UserModel
 import com.example.ngebacot.ui.theme.NgebacotTheme
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -169,6 +171,7 @@ fun IconTwitters(
                 onPostSuccess = {
                     postingStatus.isPosting = false
                     postingStatus.isPostSuccess = true
+                    postingStatus.isEditing = false
                     onPostSuccess()
                     // Reset text to empty after successful post
                     text = ""
@@ -252,6 +255,7 @@ fun MainContent() {
     }
 }
 
+
 @Composable
 fun PostButton(
     apiService: ApiService,
@@ -312,7 +316,11 @@ suspend fun postContent(
     )
 
     try {
-        val postResponse = apiService.postContent(headers, userId, content)
+        // Melakukan panggilan POST ke API untuk memposting konten
+//        val postResponse = apiService.postContent(headers, userId, content)
+        val postResponse = withContext(Dispatchers.IO) {
+            apiService.postContent(headers, userId, content)
+        }
 
         if (postResponse.isSuccessful) {
             println("Post successful")
