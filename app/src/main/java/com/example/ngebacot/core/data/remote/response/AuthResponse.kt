@@ -6,7 +6,7 @@
 
     @Serializable
     data class AuthResponse (
-        @SerialName("jwt-token")
+        @SerializedName("jwt-token")
         val jwtToken: String,
         val user: UserModel
     )
